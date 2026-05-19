@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Peritaje Vehicular</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root {
+    --azul: #1a73c7;
+    --azul-dark: #0d5fa8;
+    --azul-light: #e8f1fb;
+    --verde: #27ae60;
+    --rojo: #e74c3c;
+    --naranja: #e67e22;
+    --gris: #f7f8fa;
+    --borde: #dde3ec;
+    --texto: #1c2433;
+    --texto-suave: #6b7a8d;
+    --radio: 8px;
+    --sombra: 0 2px 12px rgba(26,115,199,.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f4f9;
+    color: var(--texto);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--azul);
+    color: white;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 16px rgba(26,115,199,.35);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  header .logo span { color: #7ec8ff; }
+  header .subtitle { font-size: .85rem; opacity: .8; margin-left: auto; }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+
+  /* ── Progreso ── */
+  .progress-bar-wrap {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 28px;
+    box-shadow: var(--sombra);
+  }
+  .progress-steps {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+  .progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--borde);
+    z-index: 0;
+  }
+  .step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+  }
+  .step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--borde);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--texto-suave);
+    transition: all .25s;
+  }
+  .step.active .step-dot {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(26,115,199,.2);
+  }
+  .step.done .step-dot { background: var(--verde); border-color: var(--verde); color: white; }
+  .step-label { font-size: .65rem; color: var(--texto-suave); text-align: center; max-width: 60px; }
+  .step.active .step-label { color: var(--azul); font-weight: 600; }
+
+  /* ── Secciones del formulario ── */
+  .seccion {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    margin-bottom: 24px;
+    overflow: hidden;
+    display: none;
+    animation: fadeIn .3s ease;
+  }
+  .seccion.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .seccion-header {
+    background: var(--azul);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .seccion-header .num {
+    background: rgba(255,255,255,.2);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem;
+    font-weight: 700;
+  }
+  .seccion-header h2 { font-size: 1rem; font-weight: 600; }
+  .seccion-body { padding: 20px; }
+
+  /* ── Grids de campos ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+  .col-full { grid-column: 1 / -1; }
+
+  /* ── Campos ── */
+  .campo { display: flex; flex-direction: column; gap: 5px; }
+  .campo label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .campo input, .campo select, .campo textarea {
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 9px 12px;
+    font-size: .9rem;
+    font-family: inherit;
+    color: var(--texto);
+    background: var(--gris);
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  .campo input:focus, .campo select:focus, .campo textarea:focus {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(26,115,199,.12);
+    background: white;
+  }
+
+  /* ── Tabla de ítems B/R/M ── */
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+  .items-table th {
+    background: var(--azul-light);
+    color: var(--azul);
+    font-weight: 600;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+  }
+  .items-table th.center { text-align: center; }
+  .items-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--borde);
+    vertical-align: middle;
+  }
+  .items-table tr:last-child td { border-bottom: none; }
+  .items-table tr:hover td { background: var(--gris); }
+  .radio-group {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 20px;
+    border: 1.5px solid var(--borde);
+    transition: all .15s;
+  }
+  .radio-group input[type=radio] { display: none; }
+  .radio-group label.b { color: var(--verde); border-color: var(--verde); }
+  .radio-group label.b.checked { background: var(--verde); color: white; }
+  .radio-group label.r { color: var(--naranja); border-color: var(--naranja); }
+  .radio-group label.r.checked { background: var(--naranja); color: white; }
+  .radio-group label.m { color: var(--rojo); border-color: var(--rojo); }
+  .radio-group label.m.checked { background: var(--rojo); color: white; }
+  .radio-group label.na { color: var(--texto-suave); border-color: var(--borde); }
+  .radio-group label.na.checked { background: var(--texto-suave); color: white; }
+
+  /* ── Observaciones ── */
+  .obs-list { display: flex; flex-direction: column; gap: 8px; }
+  .obs-item {
+    display: grid;
+    grid-template-columns: 140px 1fr 36px;
+    gap: 8px;
+    align-items: center;
+    background: var(--gris);
+    padding: 8px 10px;
+    border-radius: var(--radio);
+    border: 1px solid var(--borde);
+  }
+  .obs-item select, .obs-item input {
+    border: 1.5px solid var(--borde);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: .85rem;
+    font-family: inherit;
+    background: white;
+    outline: none;
+  }
+  .badge-aviso { background: #f39c12; color: white; }
+  .badge-pendiente { background: var(--azul); color: white; }
+  .badge-inmediato { background: var(--rojo); color: white; }
+  .btn-remove {
+    background: none;
+    border: none;
+    color: var(--rojo);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+  }
+  .btn-add {
+    background: var(--azul-light);
+    color: var(--azul);
+    border: 1.5px dashed var(--azul);
+    border-radius: var(--radio);
+    padding: 8px 16px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    transition: all .2s;
+  }
+  .btn-add:hover { background: var(--azul); color: white; }
+
+  /* ── Calificación visual ── */
+  .cal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .cal-card {
+    background: var(--gris);
+    border: 1.5px solid var(--borde);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .cal-card label { font-size: .7rem; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; }
+  .cal-card .pct {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--azul);
+    margin: 4px 0 2px;
+  }
+  .cal-bar { height: 6px; border-radius: 3px; background: var(--borde); margin-top: 6px; overflow: hidden; }
+  .cal-bar-fill { height: 100%; border-radius: 3px; background: var(--verde); transition: width .4s; }
+
+  /* ── Botones de navegación ── */
+  .nav-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 10px 24px;
+    border-radius: var(--radio);
+    border: none;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all .2s;
+  }
+  .btn-secondary {
+    background: white;
+    color: var(--texto);
+    border: 1.5px solid var(--borde);
+  }
+  .btn-secondary:hover { background: var(--gris); }
+  .btn-primary {
+    background: var(--azul);
+    color: white;
+    box-shadow: 0 2px 8px rgba(26,115,199,.3);
+  }
+  .btn-primary:hover { background: var(--azul-dark); transform: translateY(-1px); }
+  .btn-success {
+    background: var(--verde);
+    color: white;
+    box-shadow: 0 2px 8px rgba(39,174,96,.3);
+    font-size: 1rem;
+    padding: 12px 32px;
+  }
+  .btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  /* ── Daños carrocería ── */
+  .dano-item {
+    display: grid;
+    grid-template-columns: 1fr 120px 1fr 36px;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--borde);
+  }
+
+  /* ── Resumen final ── */
+  .resumen-card {
+    background: linear-gradient(135deg, var(--azul), var(--azul-dark));
+    color: white;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .resumen-card .big-num {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .resumen-card .label { opacity: .8; font-size: .9rem; margin-top: 4px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--verde);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    display: none;
+    z-index: 999;
+  }
+  .toast.show { display: block; animation: slideUp .3s ease; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: none; opacity:1; } }
+
+  @media (max-width: 700px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .cal-grid { grid-template-columns: 1fr 1fr; }
+    .obs-item { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Perito<span>.com</span></div>
+  <div class="subtitle">Sistema de Inspección Vehicular</div>
+</header>
+
+<div class="container">
+
+  <!-- Barra de progreso -->
+  <div class="progress-bar-wrap">
+    <div class="progress-steps" id="progressSteps"></div>
+  </div>
+
+  <!-- ───────────── SECCIÓN 1: Datos del vehículo ───────────── -->
+  <div class="seccion visible" id="sec1">
+    <div class="seccion-header"><div class="num">1</div><h2>Datos del Vehículo</h2></div>
+    <div class="seccion-body">
+      <div class="grid-4">
+        <div class="campo"><label>No. de Servicio</label><input type="text" id="no_servicio" value="001"></div>
+        <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
+        <div class="campo"><label>Placa</label><input type="text" id="placa" placeholder="ABC123" style="text-transform:uppercase"></div>
+        <div class="campo"><label>Tipo de Peritaje</label>
+          <select id="tipo_peritaje"><option>Completo</option><option>Básico</option></select>
+        </div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="grid-4">
+        <div class="campo"><label>Clase</label><input type="text" id="clase" value="Automóvil"></div>
+        <div class="campo"><label>Marca</label><input type="text" id="marca" placeholder="Chevrolet"></div>
+        <div class="campo"><label>Línea</label><input type="text" id="linea" placeholder="Spark"></div>
+        <div class="campo"><label>Carrocería</label><input type="text" id="carroceria" value="Hatch Back"></div>
+        <div class="campo"><label>Modelo</label><input type="number" id="modelo" placeholder="2023"></div>
+        <div class="campo"><label>Color</label><input type="text" id="color" placeholder="Negro Titán"></div>
+        <div class="campo"><label>Nacionalidad</label><input type="text" id="nacionalidad" value="Colombia"></div>
+        <div class="campo"><label>Tipo de Caja</label>
+          <select id="tipo_caja"><option>Mecánica</option><option>Automática</option><option>CVT</option></select>
+        </div>
+        <div class="campo"><label>Cilindraje (cc)</label><input type="number" id="cilindraje" placeholder="995"></div>
+        <div class="campo"><label>Combustible</label>
+          <select id="combustible"><option>Gasolina</option><option>Diesel</option><option>Eléctrico</option><option>Gas</option></select>
+        </div>
+        <div class="campo"><label>Pintura</label>
+          <select id="pintura"><option>Plana</option><option>Metálica</option><option>Perlada</option></select>
+        </div>
+        <div class="campo"><label>Servicio</label>
+          <select id="servicio"><option>Particular</option><option>Público</option><option>Oficial</option></select>
+        </div>
+        <div class="campo"><label>Kilometraje</label><input type="number" id="kilometraje" placeholder="129199"></div>
+        <div class="campo"><label>No. Chasis</label><input type="text" id="no_chasis"></div>
+        <div class="campo"><label>No. Serial</label><input type="text" id="no_serial"></div>
+        <div class="campo"><label>No. Motor</label><input type="text" id="no_motor"></div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="grid-3">
+        <div class="campo"><label>Propietario</label><input type="text" id="propietario"></div>
+        <div class="campo"><label>Documento / NIT</label><input type="text" id="documento"></div>
+        <div class="campo"><label>Dueños anteriores</label><input type="number" id="duenos_anteriores" value="0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────── SECCIÓN 2+3: Documentación y Valores ───────────── -->
+  <div class="seccion" id="sec2">
+    <div class="seccion-header"><div class="num">2-3</div><h2>Documentación y Valores</h2></div>
+    <div class="seccion-body">
+      <div class="grid-3">
+        <div class="campo"><label>Aseguradora</label><input type="text" id="aseguradora" placeholder="Allianz"></div>
+        <div class="campo"><label>Reporta Siniestros</label>
+          <select id="reporta_siniestros"><option value="0">No</option><option value="1">Sí</option></select>
+        </div>
+        <div class="campo"><label>Cuántos siniestros</label><input type="number" id="cuantos_siniestros" value="0"></div>
+        <div class="campo"><label>Valor reclamaciones ($)</label><input type="text" id="valor_reclamaciones" placeholder="0"></div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="grid-3">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="tarjeta_propiedad" checked> Tarjeta de propiedad
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="soat" checked> SOAT vigente
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="rev_tecnomecanica" checked> Rev. Tecnomecánica
+        </label>
+      </div>
+      <div style="height:20px"></div>
+      <h3 style="font-size:.9rem;color:var(--texto-suave);margin-bottom:12px">VALORES COMERCIALES</h3>
+      <div class="grid-3">
+        <div class="campo"><label>Revista Motor ($)</label><input type="text" id="val_revista_motor" placeholder="0"></div>
+        <div class="campo"><label>Fasecolda ($)</label><input type="text" id="val_fasecolda" placeholder="0"></div>
+        <div class="campo"><label>Mercado ($)</label><input type="text" id="val_mercado" placeholder="0"></div>
+        <div class="campo"><label>Accesorios ($)</label><input type="text" id="val_accesorios" placeholder="0"></div>
+        <div class="campo"><label>Depreciación ($)</label><input type="text" id="val_depreciacion" placeholder="0"></div>
+        <div class="campo"><label>Valor Elperito ($)</label><input type="text" id="val_elperito" placeholder="0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────── SECCIÓN 4: Inspección Visual ───────────── -->
+  <div class="seccion" id="sec4">
+    <div class="seccion-header"><div class="num">4</div><h2>Inspección Visual y Técnica</h2></div>
+    <div class="seccion-body">
+      <div class="grid-2">
+        <div>
+          <label style="font-size:.75rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase">% Carrocería</label>
+          <input type="number" id="pct_carroceria" min="0" max="100" value="100" style="width:80px;margin:4px 0;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+          <label style="font-size:.75rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;display:block;margin-top:10px">% Chasis/Estructura</label>
+          <input type="number" id="pct_chasis" min="0" max="100" value="100" style="width:80px;margin:4px 0;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+        </div>
+        <div>
+          <p style="font-size:.8rem;font-weight:600;color:var(--texto-suave);margin-bottom:8px">COMPRESIÓN MOTOR (PSI)</p>
+          <div class="grid-4" style="gap:8px">
+            <div class="campo"><label>Cil 1</label><input type="number" id="cil1" placeholder="122"></div>
+            <div class="campo"><label>Cil 2</label><input type="number" id="cil2" placeholder="122"></div>
+            <div class="campo"><label>Cil 3</label><input type="number" id="cil3" placeholder="122"></div>
+            <div class="campo"><label>Cil 4</label><input type="number" id="cil4" placeholder="122"></div>
+            <div class="campo"><label>Cil 5</label><input type="number" id="cil5"></div>
+            <div class="campo"><label>Cil 6</label><input type="number" id="cil6"></div>
+            <div class="campo"><label>Cil 7</label><input type="number" id="cil7"></div>
+            <div class="campo"><label>Cil 8</label><input type="number" id="cil8"></div>
+          </div>
+        </div>
+      </div>
+      <div style="height:16px"></div>
+      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:8px">Llantas y Amortiguadores</p>
+      <div class="grid-4">
+        <div class="campo"><label>Vida útil delantera (%)</label><input type="number" id="llanta_del_vida" value="0" min="0" max="100"></div>
+        <div class="campo"><label>Presión delantera (PSI)</label><input type="number" id="llanta_del_psi" value="38"></div>
+        <div class="campo"><label>Vida útil trasera (%)</label><input type="number" id="llanta_tra_vida" value="0" min="0" max="100"></div>
+        <div class="campo"><label>Presión trasera (PSI)</label><input type="number" id="llanta_tra_psi" value="38"></div>
+      </div>
+      <div class="grid-3" style="margin-top:10px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="llantas_cambio"> Llantas requieren cambio
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="susp_del_cambio"> Suspensión delantera cambio
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="susp_tra_cambio"> Suspensión trasera cambio
+        </label>
+      </div>
+      <div style="height:16px"></div>
+      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:8px">Daños en Carrocería</p>
+      <div id="danos-list"></div>
+      <button class="btn-add" onclick="addDano()">+ Agregar daño</button>
+    </div>
+  </div>
+
+  <!-- ───────────── SECCIÓN 5-11: Ítems técnicos ───────────── -->
+  <div class="seccion" id="sec5">
+    <div class="seccion-header"><div class="num">5</div><h2>Motor</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-motor"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_motor" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion" id="sec6">
+    <div class="seccion-header"><div class="num">6</div><h2>Sistema Eléctrico</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-electrico"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_electrico" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion" id="sec7">
+    <div class="seccion-header"><div class="num">7</div><h2>Fuga de Fluidos</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-fluidos"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_fluidos" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion" id="sec8">
+    <div class="seccion-header"><div class="num">8</div><h2>Llantas</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-llantas"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_llantas" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion" id="sec9">
+    <div class="seccion-header"><div class="num">9</div><h2>Tren Delantero y Suspensión</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-tren"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_tren" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion" id="sec10">
+    <div class="seccion-header"><div class="num">10</div><h2>Interior del Vehículo</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-interior"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_interior" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion" id="sec11">
+    <div class="seccion-header"><div class="num">11</div><h2>Prueba de Ruta</h2></div>
+    <div class="seccion-body">
+      <table class="items-table" id="tabla-ruta"></table>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
+        <input type="number" id="pct_ruta" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────── SECCIÓN 12: Accesorios + Observaciones ───────────── -->
+  <div class="seccion" id="sec12">
+    <div class="seccion-header"><div class="num">12</div><h2>Accesorios y Observaciones del Perito</h2></div>
+    <div class="seccion-body">
+      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:10px">Accesorios (uno por línea)</p>
+      <textarea id="accesorios" rows="4" style="width:100%;border:1.5px solid var(--borde);border-radius:8px;padding:10px;font-family:inherit;font-size:.9rem;outline:none" placeholder="Radio&#10;Parlantes&#10;Timón deportivo"></textarea>
+      <div style="height:20px"></div>
+      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:10px">Observaciones del Perito</p>
+      <div class="obs-list" id="obs-list"></div>
+      <button class="btn-add" onclick="addObs()">+ Agregar observación</button>
+      <div style="height:20px"></div>
+      <div class="campo col-full">
+        <label>Calificación Final Total (%)</label>
+        <input type="number" id="calificacion_total" min="0" max="100" value="100"
+               style="font-size:1.5rem;font-weight:700;color:var(--azul);text-align:center;max-width:120px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────── Botones de navegación ───────────── -->
+  <div class="nav-btns">
+    <button class="btn btn-secondary" id="btnPrev" onclick="navStep(-1)" style="display:none">← Anterior</button>
+    <button class="btn btn-primary" id="btnNext" onclick="navStep(1)">Siguiente →</button>
+    <button class="btn btn-success" id="btnGenerar" onclick="generarPDF()" style="display:none">
+      📄 Generar Informe PDF
+    </button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">✓ Generando PDF…</div>
+
+<script>
+// ─── Definición de secciones y pasos ─────────────────────────────────────
+const STEPS = [
+  { id: 'sec1', label: 'Datos\nVehículo' },
+  { id: 'sec2', label: 'Docs &\nValores' },
+  { id: 'sec4', label: 'Inspección\nVisual' },
+  { id: 'sec5', label: 'Motor' },
+  { id: 'sec6', label: 'Eléctrico' },
+  { id: 'sec7', label: 'Fluidos' },
+  { id: 'sec8', label: 'Llantas' },
+  { id: 'sec9', label: 'Tren' },
+  { id: 'sec10', label: 'Interior' },
+  { id: 'sec11', label: 'Ruta' },
+  { id: 'sec12', label: 'Accesorios\n& Obs.' },
+];
+
+let currentStep = 0;
+
+// ─── Definición de ítems por sección ────────────────────────────────────
+const ITEMS_DEF = {
+  motor: [
+    ['Arranque','arranque'], ['Radiador','radiador'], ['Carter motor','carter_motor'],
+    ['Carter de caja','carter_caja'], ['Caja de velocidades','caja_vel'],
+    ['Soporte de caja','soporte_caja'], ['Soporte de motor','soporte_motor'],
+    ['Ruido de motor','ruido_motor'], ['Ventiladores','ventiladores'],
+    ['Mangueras','mangueras'], ['Condición embrague','embrague'],
+    ['Sincronización','sincronizacion'], ['Correa repartición','correa_rep'],
+    ['Correa accesorios','correa_acc'], ['Polea y tensores','polea_tensores'],
+  ],
+  electrico: [
+    ['Panorámico delantero','panoramico_del'], ['Panorámico trasero','panoramico_tra'],
+    ['Vidrios','vidrios'], ['Plumillas','plumillas'],
+    ['Farola derecha','farola_der'], ['Farola izquierda','farola_izq'],
+    ['Exploradora derecha','explor_der'], ['Exploradora izquierda','explor_izq'],
+    ['Stop derecho','stop_der'], ['Stop izquierdo','stop_izq'],
+    ['Bocina','bocina'], ['Batería','bateria'],
+    ['Fusibles','fusibles'], ['Alternador','alternador'], ['Luz porta placa','luz_placa'],
+  ],
+  fluidos: [
+    ['Fuga aceite motor','aceite_motor'], ['Fuga aceite caja','aceite_caja'],
+    ['Fuga refrigerante','refrigerante'], ['Fuga líquido freno','liq_freno'],
+    ['Fuga dirección hidráulica','dir_hidraulica'], ['Fuga diferencial','diferencial'],
+  ],
+  llantas: [
+    ['Llantas delanteras','del'], ['Llantas traseras','tra'],
+    ['Llanta de repuesto','repuesto'], ['Desgaste','desgaste'], ['Estado rines','rines'],
+  ],
+  tren: [
+    ['Pastillas de freno','pastillas'], ['Discos de freno','discos'],
+    ['Amortiguadores del.','amort_del'], ['Amortiguadores tra.','amort_tra'],
+    ['Puntas de ejes','puntas'], ['Axiales','axiales'],
+    ['Terminales','terminales'], ['Rótulas','rotulas'],
+    ['Bujes','bujes'], ['Tijeras','tijeras'],
+    ['Caja de dirección','caja_dir'], ['Rodamientos','rodamientos'],
+  ],
+  interior: [
+    ['Calefacción','calefaccion'], ['Aire acondicionado','aire_ac'],
+    ['Cinturones','cinturones'], ['Asiento derecho','asiento_der'],
+    ['Asiento izquierdo','asiento_izq'], ['Asientos traseros','asientos_tra'],
+    ['Condición del techo','techo'], ['Manija techo','manija_techo'],
+    ['Luz de techo','luz_techo'], ['Carteras','carteras'],
+    ['Millare','millare'], ['Alfombras','alfombras'],
+    ['Cabeceros','cabeceros'], ['Tapetes','tapetes'],
+  ],
+  ruta: [
+    ['Aceleración','aceleracion'], ['Maniobrabilidad','maniobrabilidad'],
+    ['Ángulo de alineación','alineacion'], ['Condición de frenado','frenado'],
+    ['Condición del embrague','embrague'], ['Relación caja-motor','relacion_caja'],
+    ['Vibraciones','vibraciones'],
+  ],
+};
+
+// ─── Init ──────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Fecha de hoy
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+
+  // Construir barra de progreso
+  const ps = document.getElementById('progressSteps');
+  STEPS.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'step' + (i === 0 ? ' active' : '');
+    div.innerHTML = `<div class="step-dot">${i+1}</div><div class="step-label">${s.label}</div>`;
+    div.onclick = () => goToStep(i);
+    ps.appendChild(div);
+  });
+
+  // Construir tablas de ítems
+  Object.entries(ITEMS_DEF).forEach(([secKey, items]) => {
+    buildItemsTable(secKey, items);
+  });
+
+  updateNav();
+  addDano();
+  addObs();
+});
+
+// ─── Tablas de ítems ──────────────────────────────────────────────────
+function buildItemsTable(secKey, items) {
+  const table = document.getElementById(`tabla-${secKey}`);
+  if (!table) return;
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th style="width:200px">Ítem</th>
+        <th class="center" style="width:80px">Bueno</th>
+        <th class="center" style="width:80px">Regular</th>
+        <th class="center" style="width:80px">Malo</th>
+        <th class="center" style="width:80px">N/A</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${items.map(([label, key]) => `
+        <tr>
+          <td>${label}</td>
+          <td><div class="radio-group">
+            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_B" value="B" checked>
+            <label class="b" for="${secKey}_${key}_B" onclick="updateLabel(this)">B</label>
+          </div></td>
+          <td><div class="radio-group">
+            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_R" value="R">
+            <label class="r" for="${secKey}_${key}_R" onclick="updateLabel(this)">R</label>
+          </div></td>
+          <td><div class="radio-group">
+            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_M" value="M">
+            <label class="m" for="${secKey}_${key}_M" onclick="updateLabel(this)">M</label>
+          </div></td>
+          <td><div class="radio-group">
+            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_NA" value="NA">
+            <label class="na" for="${secKey}_${key}_NA" onclick="updateLabel(this)">NA</label>
+          </div></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+  // Marcar el primero
+  items.forEach(([, key]) => {
+    document.getElementById(`${secKey}_${key}_B`).checked = true;
+    updateAllLabels(`${secKey}_${key}`);
+  });
+}
+
+function updateLabel(label) {
+  const name = label.previousElementSibling.name;
+  document.querySelectorAll(`[name="${name}"]`).forEach(r => {
+    const l = r.nextElementSibling;
+    l.classList.toggle('checked', r.checked);
+  });
+}
+
+function updateAllLabels(name) {
+  document.querySelectorAll(`[name="${name}"]`).forEach(r => {
+    const l = r.nextElementSibling;
+    if (l) l.classList.toggle('checked', r.checked);
+  });
+}
+
+// ─── Daños carrocería ─────────────────────────────────────────────────
+let danoCount = 0;
+function addDano() {
+  const list = document.getElementById('danos-list');
+  const id = danoCount++;
+  const div = document.createElement('div');
+  div.className = 'dano-item';
+  div.id = `dano-${id}`;
+  div.innerHTML = `
+    <input type="text" placeholder="Pieza (ej: Guardafango izq.)" id="dano_pieza_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
+    <select id="dano_estado_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
+      <option value="Bueno">Bueno</option>
+      <option value="Regular">Regular</option>
+      <option value="Malo" selected>Malo</option>
+    </select>
+    <input type="text" placeholder="Descripción del daño" id="dano_desc_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
+    <button class="btn-remove" onclick="document.getElementById('dano-${id}').remove()">✕</button>
+  `;
+  list.appendChild(div);
+}
+
+// ─── Observaciones ────────────────────────────────────────────────────
+let obsCount = 0;
+function addObs() {
+  const list = document.getElementById('obs-list');
+  const id = obsCount++;
+  const div = document.createElement('div');
+  div.className = 'obs-item';
+  div.id = `obs-${id}`;
+  div.innerHTML = `
+    <select id="obs_nivel_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
+      <option value="AVISO">AVISO</option>
+      <option value="PENDIENTE">PENDIENTE</option>
+      <option value="INMEDIATO">INMEDIATO</option>
+    </select>
+    <input type="text" placeholder="Descripción de la observación" id="obs_desc_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit;width:100%">
+    <button class="btn-remove" onclick="document.getElementById('obs-${id}').remove()">✕</button>
+  `;
+  list.appendChild(div);
+}
+
+// ─── Navegación ───────────────────────────────────────────────────────
+function navStep(dir) {
+  goToStep(currentStep + dir);
+}
+
+function goToStep(idx) {
+  if (idx < 0 || idx >= STEPS.length) return;
+
+  // Ocultar actual
+  document.getElementById(STEPS[currentStep].id).classList.remove('visible');
+
+  // Marcar como completado
+  const dots = document.querySelectorAll('.step');
+  dots[currentStep].classList.remove('active');
+  if (idx > currentStep) dots[currentStep].classList.add('done');
+
+  currentStep = idx;
+  document.getElementById(STEPS[currentStep].id).classList.add('visible');
+  dots[currentStep].classList.add('active');
+  dots[currentStep].classList.remove('done');
+
+  document.querySelector('.container').scrollTo(0, 0);
+  window.scrollTo(0, 0);
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('btnPrev').style.display = currentStep > 0 ? 'flex' : 'none';
+  const isLast = currentStep === STEPS.length - 1;
+  document.getElementById('btnNext').style.display = isLast ? 'none' : 'flex';
+  document.getElementById('btnGenerar').style.display = isLast ? 'flex' : 'none';
+}
+
+// ─── Recopilar datos y enviar ─────────────────────────────────────────
+function recopilarDatos() {
+  const d = {};
+
+  // Básicos
+  ['no_servicio','fecha','placa','tipo_peritaje','clase','marca','linea','carroceria',
+   'modelo','color','nacionalidad','tipo_caja','cilindraje','combustible','pintura',
+   'servicio','kilometraje','no_chasis','no_serial','no_motor','propietario',
+   'documento','duenos_anteriores','aseguradora','cuantos_siniestros','valor_reclamaciones',
+   'val_revista_motor','val_fasecolda','val_mercado','val_accesorios','val_depreciacion',
+   'val_elperito','pct_carroceria','pct_chasis','calificacion_total',
+   'llanta_del_vida','llanta_del_psi','llanta_tra_vida','llanta_tra_psi',
+   'pct_motor','pct_electrico','pct_fluidos','pct_llantas','pct_tren','pct_interior','pct_ruta',
+  ].forEach(k => {
+    const el = document.getElementById(k);
+    if (el) d[k] = el.value;
+  });
+
+  // Checkboxes
+  ['tarjeta_propiedad','soat','rev_tecnomecanica','llantas_cambio','susp_del_cambio','susp_tra_cambio']
+    .forEach(k => { const el = document.getElementById(k); if (el) d[k] = el.checked; });
+
+  d.reporta_siniestros = document.getElementById('reporta_siniestros').value === '1';
+
+  // Compresión motor
+  d.compresion_motor = {};
+  for (let i = 1; i <= 8; i++) {
+    const el = document.getElementById(`cil${i}`);
+    if (el && el.value) d.compresion_motor[`cil${i}`] = el.value;
+  }
+
+  // Ítems B/R/M/NA
+  Object.entries(ITEMS_DEF).forEach(([secKey, items]) => {
+    items.forEach(([, key]) => {
+      const sel = document.querySelector(`[name="${secKey}_${key}"]:checked`);
+      if (sel) d[`${secKey}_${key}`] = sel.value;
+    });
+  });
+
+  // Daños carrocería
+  d.danos_carroceria = [];
+  document.querySelectorAll('[id^="dano_pieza_"]').forEach(el => {
+    const id = el.id.split('_').pop();
+    const pieza = el.value.trim();
+    const estado = document.getElementById(`dano_estado_${id}`)?.value || '';
+    const desc = document.getElementById(`dano_desc_${id}`)?.value.trim() || '';
+    if (pieza) d.danos_carroceria.push({ pieza, estado, descripcion: desc });
+  });
+
+  // Observaciones
+  d.observaciones = [];
+  document.querySelectorAll('[id^="obs_nivel_"]').forEach(el => {
+    const id = el.id.split('_').pop();
+    const nivel = el.value;
+    const desc = document.getElementById(`obs_desc_${id}`)?.value.trim() || '';
+    if (desc) d.observaciones.push({ nivel, descripcion: desc });
+  });
+
+  // Accesorios
+  d.accesorios = document.getElementById('accesorios').value
+    .split('\n').map(s => s.trim()).filter(Boolean);
+
+  return d;
+}
+
+async function generarPDF() {
+  const datos = recopilarDatos();
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+
+  try {
+    const res = await fetch('/generar_pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos),
+    });
+    if (!res.ok) throw new Error('Error del servidor');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `peritaje_${datos.placa || 'vehiculo'}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.textContent = '✓ PDF generado exitosamente';
+  } catch (e) {
+    toast.textContent = '✗ Error al generar PDF';
+    toast.style.background = '#e74c3c';
+    console.error(e);
+  }
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.textContent = '✓ Generando PDF…';
+    toast.style.background = '';
+  }, 3500);
+}
+</script>
+</body>
+</html>
