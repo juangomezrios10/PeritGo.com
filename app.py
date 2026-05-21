@@ -10,6 +10,7 @@ from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle, Paragraph,
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.pdfgen import canvas as rl_canvas
+from pypdf import PdfWriter, PdfReader
 
 app = Flask(__name__)
 
@@ -96,10 +97,73 @@ def generar_pdf(datos):
     story = []
     W = 185*mm  # ancho útil
 
+    # ── Cálculo automático de puntajes por sección ───────────────────────────
+    PESOS_SECCION = {
+        'motor':    20,
+        'electrico': 10,
+        'fluidos':   10,
+        'llantas':   10,
+        'tren':      20,
+        'interior':  10,
+        'ruta':      20,
+    }
+    ITEMS_DEF_BACK = {
+        'motor':    ['arranque','radiador','carter_motor','carter_caja','caja_vel','soporte_caja',
+                     'soporte_motor','ruido_motor','ventiladores','mangueras','embrague',
+                     'sincronizacion','correa_rep','correa_acc','polea_tensores'],
+        'electrico':['panoramico_del','panoramico_tra','vidrios','plumillas','farola_der',
+                     'farola_izq','explor_der','explor_izq','stop_der','stop_izq','bocina',
+                     'bateria','fusibles','alternador','luz_placa'],
+        'fluidos':  ['aceite_motor','aceite_caja','refrigerante','liq_freno','dir_hidraulica','diferencial'],
+        'llantas':  ['del','tra','repuesto','desgaste','rines'],
+        'tren':     ['pastillas','discos','amort_del','amort_tra','puntas','axiales',
+                     'terminales','rotulas','bujes','tijeras','caja_dir','rodamientos'],
+        'interior': ['calefaccion','aire_ac','cinturones','asiento_der','asiento_izq',
+                     'asientos_tra','techo','manija_techo','luz_techo','carteras',
+                     'millare','alfombras','cabeceros','tapetes'],
+        'ruta':     ['aceleracion','maniobrabilidad','alineacion','frenado','embrague',
+                     'relacion_caja','vibraciones'],
+    }
+    VALOR_ESTADO = {'B': 100, 'R': 50, 'M': 0}
+
+    suma_ponderada = 0
+    suma_pesos = 0
+    for sec_key, items in ITEMS_DEF_BACK.items():
+        vals = []
+        for key in items:
+            v = datos.get(f'{sec_key}_{key}', 'B')
+            if v != 'NA':
+                vals.append(VALOR_ESTADO.get(v, 100))
+        pct_sec = round(sum(vals) / len(vals)) if vals else 100
+        datos[f'pct_{sec_key}'] = pct_sec
+        peso = PESOS_SECCION.get(sec_key, 10)
+        suma_ponderada += pct_sec * peso
+        suma_pesos += peso
+
+    datos['calificacion_total'] = round(suma_ponderada / suma_pesos) if suma_pesos else 100
+
     # ── Encabezado ───────────────────────────────────────────────────────────
     fecha = datos.get('fecha', datetime.now().strftime('%d/%m/%Y'))
     no_servicio = datos.get('no_servicio', '---')
     placa = datos.get('placa', '---').upper()
+
+    # Recuadro de placa con diseño destacado
+    placa_table = Table([
+        [Paragraph('PLACA', ParagraphStyle('placa_lbl', fontSize=7, fontName='Helvetica-Bold',
+                                            textColor=BLANCO, alignment=TA_CENTER))],
+        [Paragraph(f'<b>{placa}</b>', ParagraphStyle('placa_val', fontSize=22,
+                                                      fontName='Helvetica-Bold', textColor=BLANCO,
+                                                      alignment=TA_CENTER, leading=26))],
+    ], colWidths=[52*mm],
+    style=TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), AZUL),
+        ('BOX', (0, 0), (-1, -1), 2.5, colors.HexColor('#0d5fa8')),
+        ('TOPPADDING', (0, 0), (-1, 0), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 2),
+        ('TOPPADDING', (0, 1), (-1, 1), 2),
+        ('BOTTOMPADDING', (0, 1), (-1, 1), 8),
+        ('ROUNDEDCORNERS', [4, 4, 4, 4]),
+    ]))
 
     encabezado_data = [
         [
@@ -108,18 +172,25 @@ def generar_pdf(datos):
         ],
         [
             Table([
-                [Paragraph('No. de servicio', styles['celda_label']),
-                 Paragraph(f'<b>{no_servicio}</b>', ParagraphStyle('', fontSize=13,
-                            fontName='Helvetica-Bold', textColor=NEGRO))],
-                [Paragraph('Fecha', styles['celda_label']),
-                 Paragraph(f'<b>{fecha}</b>', styles['celda_valor'])],
-                [Paragraph('Placa', styles['celda_label']),
-                 Paragraph(f'<b>{placa}</b>', ParagraphStyle('', fontSize=18,
-                            fontName='Helvetica-Bold', textColor=NEGRO))],
-            ], colWidths=[35*mm, 80*mm],
+                [
+                    Table([
+                        [Paragraph('No. de servicio', styles['celda_label']),
+                         Paragraph(f'<b>{no_servicio}</b>', ParagraphStyle('', fontSize=13,
+                                    fontName='Helvetica-Bold', textColor=NEGRO))],
+                        [Paragraph('Fecha', styles['celda_label']),
+                         Paragraph(f'<b>{fecha}</b>', styles['celda_valor'])],
+                    ], colWidths=[35*mm, 58*mm],
+                    style=TableStyle([
+                        ('GRID', (0, 0), (-1, -1), 0.3, colors.lightgrey),
+                        ('ROWPADDING', (0, 0), (-1, -1), 5),
+                    ])),
+                    Spacer(4*mm, 1),
+                    placa_table,
+                ]
+            ], colWidths=[W],
             style=TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                 ('BOX', (0, 0), (-1, -1), 0.5, colors.grey),
-                ('GRID', (0, 0), (-1, -1), 0.3, colors.lightgrey),
                 ('ROWPADDING', (0, 0), (-1, -1), 4),
             ]))
         ]
@@ -350,9 +421,12 @@ def generar_pdf(datos):
 
     # ── Secciones 5-12: tabla de ítems bueno/regular/malo ───────────────────
     def tabla_items(seccion_key, items_def, datos_d):
-        """Genera tabla de ítems con marcas B/R/M/NA."""
+        """Genera tabla de ítems con marcas B/R/M/NA y ponderación automática."""
+        n_items = len(items_def)
+        peso_item = round(100 / n_items, 1) if n_items else 0
         filas = [[
             Paragraph('Ítem', styles['celda_label']),
+            Paragraph('Peso', styles['celda_label']),
             Paragraph('B', styles['celda_label']),
             Paragraph('R', styles['celda_label']),
             Paragraph('M', styles['celda_label']),
@@ -362,15 +436,21 @@ def generar_pdf(datos):
             val = datos_d.get(f'{seccion_key}_{key}', 'B')
             filas.append([
                 Paragraph(label, styles['normal_sm']),
+                Paragraph(f'{peso_item}%', ParagraphStyle('pw', fontSize=6.5,
+                           fontName='Helvetica', textColor=colors.grey, alignment=TA_CENTER)),
                 'X' if val == 'B' else '',
                 'X' if val == 'R' else '',
                 'X' if val == 'M' else '',
                 'X' if val == 'NA' else '',
             ])
-        pct = datos_d.get(f'pct_{seccion_key}', 0)
-        filas.append([Paragraph(f'Resultado: {pct}%', ParagraphStyle('', fontSize=8,
-                       fontName='Helvetica-Bold', textColor=AZUL)), '', '', '', ''])
-        return Table(filas, colWidths=[55*mm, 8*mm, 8*mm, 8*mm, 8*mm],
+        pct = int(datos_d.get(f'pct_{seccion_key}', 0) or 0)
+        result_color = VERDE if pct >= 90 else (NARANJA if pct >= 70 else ROJO)
+        filas.append([
+            Paragraph(f'<b>Resultado sección: {pct}%</b>', ParagraphStyle('res', fontSize=8,
+                       fontName='Helvetica-Bold', textColor=BLANCO, alignment=TA_CENTER)),
+            '', '', '', '', ''
+        ])
+        return Table(filas, colWidths=[45*mm, 11*mm, 8*mm, 8*mm, 8*mm, 8*mm],
                      style=TableStyle([
                          ('GRID', (0, 0), (-1, -2), 0.3, colors.lightgrey),
                          ('BACKGROUND', (0, 0), (-1, 0), AZUL_CLARO),
@@ -378,7 +458,9 @@ def generar_pdf(datos):
                          ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
                          ('ROWPADDING', (0, 0), (-1, -1), 2),
                          ('SPAN', (0, -1), (-1, -1)),
-                         ('BACKGROUND', (0, -1), (-1, -1), AZUL_CLARO),
+                         ('BACKGROUND', (0, -1), (-1, -1), result_color),
+                         ('TOPPADDING', (0, -1), (-1, -1), 5),
+                         ('BOTTOMPADDING', (0, -1), (-1, -1), 5),
                      ]))
 
     secciones_items = [
@@ -543,10 +625,46 @@ def index():
 
 @app.route('/generar_pdf', methods=['POST'])
 def generar_pdf_route():
-    datos = request.get_json()
-    buffer = generar_pdf(datos)
-    nombre = f"peritaje_{datos.get('placa','vehiculo')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-    return send_file(buffer, mimetype='application/pdf',
+    # Soporta tanto multipart/form-data (con adjunto) como JSON (sin adjunto)
+    if request.content_type and 'multipart/form-data' in request.content_type:
+        datos = json.loads(request.form.get('datos', '{}'))
+        pdf_adjunto = request.files.get('pdf_antecedentes')
+    else:
+        datos = request.get_json() or {}
+        pdf_adjunto = None
+
+    buffer_informe = generar_pdf(datos)
+    placa = datos.get('placa', 'vehiculo')
+    nombre = f"peritaje_{placa}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+
+    if pdf_adjunto and pdf_adjunto.filename:
+        # Fusionar: informe pericial + PDF de antecedentes
+        try:
+            writer = PdfWriter()
+            # Páginas del informe generado
+            reader_informe = PdfReader(buffer_informe)
+            for page in reader_informe.pages:
+                writer.add_page(page)
+            # Páginas del PDF adjunto
+            contenido_adjunto = io.BytesIO(pdf_adjunto.read())
+            reader_adjunto = PdfReader(contenido_adjunto)
+            for page in reader_adjunto.pages:
+                writer.add_page(page)
+            # Salida fusionada
+            buffer_final = io.BytesIO()
+            writer.write(buffer_final)
+            buffer_final.seek(0)
+            nombre = f"informe_completo_{placa}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+            return send_file(buffer_final, mimetype='application/pdf',
+                             as_attachment=True, download_name=nombre)
+        except Exception as e:
+            # Si falla el merge, retorna solo el informe generado
+            buffer_informe.seek(0)
+            return send_file(buffer_informe, mimetype='application/pdf',
+                             as_attachment=True, download_name=nombre)
+
+    buffer_informe.seek(0)
+    return send_file(buffer_informe, mimetype='application/pdf',
                      as_attachment=True, download_name=nombre)
 
 
