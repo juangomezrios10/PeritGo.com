@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeritGo — Acceso</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #0a4a8a 0%, #1a73c7 55%, #3a9bd5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .wrap { width: 100%; max-width: 420px; }
+
+    /* Logo */
+    .logo-area { text-align: center; margin-bottom: 36px; }
+    .logo-big {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    .logo-big span { color: #7ec8ff; }
+    .logo-tagline { color: rgba(255,255,255,0.72); font-size: .88rem; margin-top: 8px; }
+    .badge-personal {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      font-size: .72rem; font-weight: 600;
+      padding: 5px 14px; border-radius: 20px;
+      margin-top: 12px; letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 38px 34px 32px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    }
+    .card h2 { font-size: 1.15rem; font-weight: 700; color: #1c2433; margin-bottom: 26px; }
+
+    .campo { margin-bottom: 18px; }
+    .campo label {
+      display: block; font-size: .72rem; font-weight: 600;
+      color: #6b7a8d; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px;
+    }
+    .campo input {
+      width: 100%; border: 1.5px solid #dde3ec; border-radius: 9px;
+      padding: 12px 14px; font-size: .95rem; font-family: inherit;
+      color: #1c2433; background: #f7f8fa; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .campo input:focus {
+      border-color: #1a73c7;
+      box-shadow: 0 0 0 3px rgba(26,115,199,.13);
+      background: white;
+    }
+
+    .btn-login {
+      width: 100%; background: #1a73c7; color: white; border: none;
+      border-radius: 9px; padding: 13px; font-size: .95rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(26,115,199,.38);
+      transition: all .2s; margin-top: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-login:hover { background: #0d5fa8; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,115,199,.45); }
+    .btn-login:active { transform: none; }
+
+    .error-box {
+      background: #fef2f2; border: 1.5px solid #fca5a5; color: #dc2626;
+      border-radius: 9px; padding: 11px 14px; font-size: .84rem;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+
+    .footer-note { text-align: center; color: rgba(255,255,255,0.45); font-size: .72rem; margin-top: 22px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Logo -->
+  <div class="logo-area">
+    <div class="logo-big">Perit<span>Go</span></div>
+    <div class="logo-tagline">Sistema de Gestión de Peritajes Vehiculares</div>
+    <div class="badge-personal">🔒 Solo personal autorizado</div>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <h2>Iniciar sesión</h2>
+
+    {% if error %}
+    <div class="error-box">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="campo">
+        <label>Usuario</label>
+        <input type="text" name="username" placeholder="Ingrese su usuario"
+               autocomplete="username" required autofocus>
+      </div>
+      <div class="campo">
+        <label>Contraseña</label>
+        <input type="password" name="password" placeholder="••••••••"
+               autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-login">
+        Ingresar <span>→</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="footer-note">PeritGo v2.0 &nbsp;·&nbsp; Sistema de Peritajes Vehiculares</div>
+</div>
+</body>
+</html>

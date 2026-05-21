@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeritGo — Bitácora</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --azul: #1a73c7; --azul-dark: #0d5fa8; --azul-light: #e8f1fb;
+      --verde: #27ae60; --rojo: #e74c3c; --naranja: #e67e22; --morado: #8e44ad;
+      --gris: #f7f8fa; --borde: #dde3ec; --texto: #1c2433; --texto-suave: #6b7a8d;
+      --sombra: 0 2px 14px rgba(26,115,199,.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #f0f4f9; color: var(--texto); min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--azul); color: white; padding: 0 28px;
+      display: flex; align-items: center; gap: 18px; height: 58px;
+      box-shadow: 0 2px 16px rgba(26,115,199,.4); position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+    .logo span { color: #7ec8ff; }
+    .header-user {
+      margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: .85rem;
+    }
+    .user-badge {
+      background: rgba(255,255,255,0.18); padding: 4px 12px; border-radius: 20px;
+      font-weight: 600; font-size: .8rem;
+    }
+    .btn-logout {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+      color: white; padding: 5px 14px; border-radius: 8px; font-size: .8rem;
+      font-family: inherit; cursor: pointer; font-weight: 500; transition: background .2s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+    /* ── Nav Tabs ── */
+    .nav-tabs {
+      background: white; border-bottom: 1.5px solid var(--borde);
+      padding: 0 28px; display: flex; gap: 4px; position: sticky; top: 58px; z-index: 90;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .tab-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 14px 18px; font-size: .88rem; font-weight: 600; font-family: inherit;
+      color: var(--texto-suave); background: none; border: none; cursor: pointer;
+      border-bottom: 3px solid transparent; margin-bottom: -1.5px;
+      transition: color .2s, border-color .2s;
+    }
+    .tab-btn:hover { color: var(--azul); }
+    .tab-btn.active { color: var(--azul); border-bottom-color: var(--azul); }
+    .tab-btn .icon { font-size: 1rem; }
+    .tab-badge {
+      background: var(--azul); color: white; font-size: .68rem;
+      padding: 2px 7px; border-radius: 10px; font-weight: 700;
+    }
+
+    /* ── Main ── */
+    .main { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+    /* ── Section panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+    /* ── Panel header ── */
+    .panel-top {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
+    }
+    .panel-title { font-size: 1.2rem; font-weight: 700; color: var(--texto); }
+    .panel-subtitle { font-size: .82rem; color: var(--texto-suave); margin-top: 2px; }
+    .btn-refresh {
+      background: white; border: 1.5px solid var(--borde); color: var(--texto-suave);
+      padding: 7px 14px; border-radius: 8px; font-size: .82rem; font-family: inherit;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s;
+    }
+    .btn-refresh:hover { border-color: var(--azul); color: var(--azul); }
+
+    /* ── Service Cards Grid ── */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+
+    /* ── Card ── */
+    .svc-card {
+      background: white; border-radius: 14px; box-shadow: var(--sombra);
+      border: 1.5px solid var(--borde); overflow: hidden;
+      transition: box-shadow .2s, transform .15s;
+    }
+    .svc-card:hover { box-shadow: 0 6px 28px rgba(26,115,199,.18); transform: translateY(-2px); }
+    .svc-card.completado { border-color: var(--verde); }
+
+    .card-top {
+      padding: 14px 16px 10px; display: flex; align-items: flex-start; gap: 12px;
+    }
+    .placa-box {
+      background: var(--azul); color: white; border-radius: 8px;
+      padding: 6px 14px; text-align: center; min-width: 80px;
+      box-shadow: 0 2px 8px rgba(26,115,199,.3);
+    }
+    .placa-box .placa-lbl { font-size: .58rem; font-weight: 600; opacity: .8; letter-spacing: .5px; }
+    .placa-box .placa-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+
+    .card-info { flex: 1; min-width: 0; }
+    .card-cliente { font-size: .95rem; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-perito { font-size: .78rem; color: var(--texto-suave); margin-top: 2px; }
+    .card-tiempo { font-size: .72rem; color: var(--texto-suave); margin-top: 3px; }
+
+    .tipo-badge {
+      font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 10px;
+      text-transform: uppercase; letter-spacing: .3px; white-space: nowrap;
+    }
+    .tipo-completo { background: #dbeafe; color: #1d4ed8; }
+    .tipo-basico { background: #ccfbf1; color: #0f766e; }
+    .tipo-aseguradora { background: #ffedd5; color: #c2410c; }
+    .tipo-improntas { background: #f3e8ff; color: #7e22ce; }
+
+    /* Progress dots */
+    .card-progress { padding: 10px 16px; border-top: 1px solid var(--borde); }
+    .progress-label { font-size: .72rem; color: var(--texto-suave); margin-bottom: 8px; font-weight: 500; }
+    .dots-row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .dot {
+      width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700; border: 2px solid;
+      cursor: default; transition: transform .2s; position: relative;
+    }
+    .dot:hover::after {
+      content: attr(title); position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+      background: #333; color: white; font-size: .65rem; padding: 3px 7px; border-radius: 5px;
+      white-space: nowrap; z-index: 10; pointer-events: none;
+    }
+    .dot.done { background: var(--verde); border-color: var(--verde); color: white; }
+    .dot.current { background: var(--azul); border-color: var(--azul); color: white; animation: pulse 1.5s infinite; }
+    .dot.pending { background: white; border-color: var(--borde); color: var(--texto-suave); }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(26,115,199,.4);} 50%{box-shadow:0 0 0 6px rgba(26,115,199,0);} }
+
+    .completado-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #dcfce7; color: #16a34a; font-size: .75rem; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px; margin-left: 8px;
+    }
+
+    /* Card actions */
+    .card-actions {
+      padding: 10px 14px; border-top: 1px solid var(--borde);
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+    .btn-action {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 13px; border-radius: 8px; font-size: .8rem; font-weight: 600;
+      font-family: inherit; border: none; cursor: pointer; transition: all .15s;
+    }
+    .btn-abrir { background: var(--azul); color: white; }
+    .btn-abrir:hover { background: var(--azul-dark); }
+    .btn-pdf { background: #dcfce7; color: #16a34a; }
+    .btn-pdf:hover { background: #bbf7d0; }
+    .btn-salida { background: #fef2f2; color: var(--rojo); margin-left: auto; }
+    .btn-salida:hover { background: #fee2e2; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: var(--texto-suave);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-title { font-size: 1.1rem; font-weight: 600; color: var(--texto); margin-bottom: 6px; }
+    .empty-sub { font-size: .85rem; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,20,40,.5); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+      backdrop-filter: blur(3px);
+    }
+    .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+    .modal {
+      background: white; border-radius: 16px; width: 100%; max-width: 480px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.22); overflow: hidden;
+    }
+    .modal-header {
+      background: var(--azul); color: white; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; }
+    .modal-close {
+      background: rgba(255,255,255,.2); border: none; color: white;
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; transition: background .2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.35); }
+    .modal-body { padding: 24px; }
+
+    /* ── Form fields ── */
+    .campo { margin-bottom: 16px; }
+    .campo label {
+      display: block; font-size: .73rem; font-weight: 600;
+      color: var(--texto-suave); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px;
+    }
+    .campo input, .campo select {
+      width: 100%; border: 1.5px solid var(--borde); border-radius: 9px;
+      padding: 10px 13px; font-size: .9rem; font-family: inherit; color: var(--texto);
+      background: var(--gris); outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .campo input:focus, .campo select:focus {
+      border-color: var(--azul); box-shadow: 0 0 0 3px rgba(26,115,199,.12); background: white;
+    }
+    .btn-crear {
+      width: 100%; background: var(--azul); color: white; border: none;
+      border-radius: 9px; padding: 12px; font-size: .95rem; font-weight: 600;
+      font-family: inherit; cursor: pointer; box-shadow: 0 3px 12px rgba(26,115,199,.3);
+      transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .btn-crear:hover { background: var(--azul-dark); transform: translateY(-1px); }
+    .btn-crear:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* ── Consulta / Reimprimir ── */
+    .search-bar {
+      display: flex; gap: 10px; margin-bottom: 20px;
+    }
+    .search-bar input {
+      flex: 1; border: 1.5px solid var(--borde); border-radius: 9px;
+      padding: 10px 14px; font-size: .9rem; font-family: inherit; color: var(--texto);
+      background: white; outline: none; transition: border-color .2s;
+    }
+    .search-bar input:focus { border-color: var(--azul); }
+    .btn-buscar {
+      background: var(--azul); color: white; border: none; border-radius: 9px;
+      padding: 10px 20px; font-size: .88rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-buscar:hover { background: var(--azul-dark); }
+
+    /* Result list */
+    .result-list { display: flex; flex-direction: column; gap: 10px; }
+    .result-item {
+      background: white; border: 1.5px solid var(--borde); border-radius: 10px;
+      padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+    }
+    .result-placa {
+      background: var(--azul-light); color: var(--azul); font-weight: 700;
+      font-size: .85rem; padding: 4px 10px; border-radius: 7px; white-space: nowrap;
+    }
+    .result-info { flex: 1; min-width: 0; }
+    .result-cliente { font-size: .88rem; font-weight: 600; color: var(--texto); }
+    .result-meta { font-size: .75rem; color: var(--texto-suave); margin-top: 2px; }
+    .result-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .btn-sm {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 10px; border-radius: 7px; font-size: .76rem; font-weight: 600;
+      font-family: inherit; border: 1.5px solid; cursor: pointer; transition: all .15s;
+    }
+    .btn-sm-blue { border-color: var(--azul); color: var(--azul); background: var(--azul-light); }
+    .btn-sm-blue:hover { background: var(--azul); color: white; }
+    .btn-sm-green { border-color: var(--verde); color: var(--verde); background: #dcfce7; }
+    .btn-sm-green:hover { background: var(--verde); color: white; }
+    .btn-sm-orange { border-color: var(--naranja); color: var(--naranja); background: #fef3e2; }
+    .btn-sm-orange:hover { background: var(--naranja); color: white; }
+
+    /* CIR upload */
+    .cir-upload { display: none; margin-top: 8px; }
+    .cir-upload input[type=file] { font-size: .78rem; }
+
+    .estado-chip {
+      font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .estado-creado { background: #e5e7eb; color: #374151; }
+    .estado-en-proceso { background: #dbeafe; color: #1d4ed8; }
+    .estado-completado { background: #dcfce7; color: #16a34a; }
+    .estado-cerrado { background: #f3f4f6; color: #6b7280; }
+
+    .no-results { text-align: center; color: var(--texto-suave); padding: 30px; font-size: .88rem; }
+
+    /* Spinner */
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 300;
+      padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: .88rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.18); display: none;
+      animation: slideUp .3s ease;
+    }
+    .toast.show { display: flex; align-items: center; gap: 8px; }
+    .toast.success { background: var(--verde); color: white; }
+    .toast.error { background: var(--rojo); color: white; }
+    @keyframes slideUp { from{transform:translateY(16px);opacity:0;} to{transform:none;opacity:1;} }
+
+    @media (max-width: 640px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .nav-tabs { padding: 0 12px; overflow-x: auto; }
+      .tab-btn { padding: 12px 12px; font-size: .8rem; }
+      .main { padding: 18px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">Perit<span>Go</span></div>
+  <div class="header-user">
+    <div class="user-badge">👤 {{ usuario }}</div>
+    <a href="/logout" class="btn-logout">Salir →</a>
+  </div>
+</header>
+
+<!-- Nav Tabs -->
+<nav class="nav-tabs">
+  <button class="tab-btn active" onclick="showPanel('bitacora', this)" id="tab-bitacora">
+    <span class="icon">📋</span> Bitácora Activa
+    <span class="tab-badge" id="badge-count">0</span>
+  </button>
+  <button class="tab-btn" onclick="openModal('modal-crear')">
+    <span class="icon">➕</span> Crear Solicitud
+  </button>
+  <button class="tab-btn" onclick="showPanel('consulta', this)" id="tab-consulta">
+    <span class="icon">🔍</span> Consultar
+  </button>
+  <button class="tab-btn" onclick="showPanel('reimprimir', this)" id="tab-reimprimir">
+    <span class="icon">🖨️</span> Reimprimir / CIR
+  </button>
+</nav>
+
+<!-- Main content -->
+<div class="main">
+
+  <!-- ── Panel: Bitácora Activa ── -->
+  <div class="panel active" id="panel-bitacora">
+    <div class="panel-top">
+      <div>
+        <div class="panel-title">📋 Servicios Activos</div>
+        <div class="panel-subtitle">Se actualiza automáticamente cada 6 segundos</div>
+      </div>
+      <button class="btn-refresh" onclick="cargarActivos()">🔄 Actualizar</button>
+    </div>
+    <div class="cards-grid" id="cards-container">
+      <div class="empty-state">
+        <div class="spinner" style="width:28px;height:28px;border-color:rgba(26,115,199,.3);border-top-color:var(--azul);margin:0 auto 12px"></div>
+        Cargando servicios…
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Panel: Consultar ── -->
+  <div class="panel" id="panel-consulta">
+    <div class="panel-top">
+      <div>
+        <div class="panel-title">🔍 Consultar Servicios</div>
+        <div class="panel-subtitle">Busca por placa o nombre del cliente</div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="buscar-input" placeholder="Placa o cliente…" onkeydown="if(event.key==='Enter') buscarServicios()">
+      <button class="btn-buscar" onclick="buscarServicios()">Buscar</button>
+    </div>
+    <div class="result-list" id="consulta-results">
+      <div class="no-results">Ingresa una placa o nombre para buscar</div>
+    </div>
+  </div>
+
+  <!-- ── Panel: Reimprimir / CIR ── -->
+  <div class="panel" id="panel-reimprimir">
+    <div class="panel-top">
+      <div>
+        <div class="panel-title">🖨️ Reimprimir e Informe CIR</div>
+        <div class="panel-subtitle">Descarga PDFs, carga antecedentes y genera informe completo</div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="reimprimir-input" placeholder="Placa o cliente…" onkeydown="if(event.key==='Enter') buscarReimprimir()">
+      <button class="btn-buscar" onclick="buscarReimprimir()">Buscar</button>
+    </div>
+    <div class="result-list" id="reimprimir-results">
+      <div class="no-results">Ingresa una placa o nombre para buscar</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── Modal: Crear Solicitud ── -->
+<div class="modal-overlay" id="modal-crear" onclick="if(event.target===this) closeModal('modal-crear')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>➕ Crear Nueva Solicitud</h3>
+      <button class="modal-close" onclick="closeModal('modal-crear')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="campo">
+        <label>Placa del vehículo *</label>
+        <input type="text" id="crear-placa" placeholder="ej: ABC123" style="text-transform:uppercase"
+               oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="campo">
+        <label>Nombre del cliente</label>
+        <input type="text" id="crear-cliente" placeholder="Nombre del propietario">
+      </div>
+      <div class="campo">
+        <label>Tipo de servicio</label>
+        <select id="crear-tipo">
+          <option value="Peritaje Completo">Peritaje Completo</option>
+          <option value="Peritaje Básico">Peritaje Básico / Simple</option>
+          <option value="Inspección Aseguradora">Inspección Aseguradora</option>
+          <option value="Improntas">Improntas</option>
+        </select>
+      </div>
+      <button class="btn-crear" id="btn-crear-ok" onclick="crearServicio()">
+        Crear e iniciar peritaje →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Config ──────────────────────────────────────────────────────────────────
+const STEP_LABELS = ['Datos Vehículo','Docs & Valores','Inspección Visual',
+  'Motor','Eléctrico','Fluidos','Llantas','Tren/Suspensión','Interior','Ruta','Accesorios'];
+const TOTAL_STEPS = 11;
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+function showPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type='success', ms=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = (type==='success'?'✓ ':'✗ ') + msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ─── Tipo badge ───────────────────────────────────────────────────────────────
+function tipoBadge(tipo) {
+  const map = {
+    'Peritaje Completo': 'tipo-completo',
+    'Peritaje Básico': 'tipo-basico',
+    'Inspección Aseguradora': 'tipo-aseguradora',
+    'Improntas': 'tipo-improntas',
+  };
+  const cls = map[tipo] || 'tipo-completo';
+  return `<span class="tipo-badge ${cls}">${tipo}</span>`;
+}
+
+// ─── Estado badge ────────────────────────────────────────────────────────────
+function estadoChip(estado) {
+  if (estado === 'completado') return '<span class="estado-chip estado-completado">✓ Completado</span>';
+  if (estado === 'creado') return '<span class="estado-chip estado-creado">Creado</span>';
+  if (estado === 'cerrado') return '<span class="estado-chip estado-cerrado">Cerrado</span>';
+  return '<span class="estado-chip estado-en-proceso">En proceso</span>';
+}
+
+// ─── Tiempo relativo ──────────────────────────────────────────────────────────
+function tiempoRelativo(fechaStr) {
+  if (!fechaStr) return '';
+  const ahora = new Date();
+  const fecha = new Date(fechaStr.replace(' ', 'T'));
+  const diff = Math.floor((ahora - fecha) / 1000);
+  if (diff < 60) return 'hace un momento';
+  if (diff < 3600) return `hace ${Math.floor(diff/60)} min`;
+  if (diff < 86400) return `hace ${Math.floor(diff/3600)}h`;
+  return `hace ${Math.floor(diff/86400)} días`;
+}
+
+// ─── Progress dots ────────────────────────────────────────────────────────────
+function renderDots(paso_actual, estado) {
+  const isCompleto = estado === 'completado';
+  let html = '';
+  for (let i = 0; i < TOTAL_STEPS; i++) {
+    if (isCompleto || i < paso_actual) {
+      html += `<div class="dot done" title="${STEP_LABELS[i]}">✓</div>`;
+    } else if (i === paso_actual && !isCompleto) {
+      html += `<div class="dot current" title="${STEP_LABELS[i]}">${i+1}</div>`;
+    } else {
+      html += `<div class="dot pending" title="${STEP_LABELS[i]}"></div>`;
+    }
+  }
+  return html;
+}
+
+// ─── Render card ──────────────────────────────────────────────────────────────
+function renderCard(s) {
+  const isCompleto = s.estado === 'completado';
+  const pasoLabel = isCompleto
+    ? '' : `Paso ${s.paso_actual + 1}/${TOTAL_STEPS}: ${STEP_LABELS[s.paso_actual] || ''}`;
+
+  return `
+    <div class="svc-card ${isCompleto ? 'completado' : ''}" id="card-${s.id}">
+      <div class="card-top">
+        <div class="placa-box">
+          <div class="placa-lbl">PLACA</div>
+          <div class="placa-val">${s.placa}</div>
+        </div>
+        <div class="card-info">
+          <div class="card-cliente">${s.cliente || 'Sin nombre'}</div>
+          <div style="margin-top:5px">${tipoBadge(s.tipo_servicio)}</div>
+          <div class="card-perito">👷 ${s.perito_nombre}</div>
+          <div class="card-tiempo">🕐 ${tiempoRelativo(s.fecha_actualizacion)}</div>
+        </div>
+      </div>
+
+      <div class="card-progress">
+        <div class="progress-label">
+          ${isCompleto
+            ? `<span class="completado-badge">✅ Informe generado</span>`
+            : `${pasoLabel}`}
+        </div>
+        <div class="dots-row">${renderDots(s.paso_actual, s.estado)}</div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-action btn-abrir" onclick="window.location.href='/formulario/${s.id}'">
+          ${isCompleto ? '📝 Abrir' : '▶ Continuar'}
+        </button>
+        ${s.tiene_pdf ? `
+          <button class="btn-action btn-pdf" onclick="descargarPDF(${s.id})">
+            📄 Descargar PDF
+          </button>
+        ` : ''}
+        <button class="btn-action btn-salida" onclick="darSalida(${s.id}, '${s.placa}')">
+          🗑️ Dar salida
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Cargar bitácora activa ───────────────────────────────────────────────────
+async function cargarActivos() {
+  try {
+    const res = await fetch('/api/servicios/activos');
+    const data = await res.json();
+    const container = document.getElementById('cards-container');
+    document.getElementById('badge-count').textContent = data.length;
+
+    if (data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">🚗</div>
+          <div class="empty-title">No hay servicios activos</div>
+          <div class="empty-sub">Usa "Crear Solicitud" para iniciar un nuevo peritaje</div>
+        </div>`;
+      return;
+    }
+    container.innerHTML = data.map(renderCard).join('');
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// ─── Crear servicio ───────────────────────────────────────────────────────────
+async function crearServicio() {
+  const placa = document.getElementById('crear-placa').value.trim().toUpperCase();
+  const cliente = document.getElementById('crear-cliente').value.trim();
+  const tipo = document.getElementById('crear-tipo').value;
+
+  if (!placa) { showToast('Ingrese la placa del vehículo', 'error'); return; }
+
+  const btn = document.getElementById('btn-crear-ok');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Creando…';
+
+  try {
+    const res = await fetch('/api/servicios', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({placa, cliente, tipo_servicio: tipo})
+    });
+    const data = await res.json();
+    if (data.id) {
+      closeModal('modal-crear');
+      document.getElementById('crear-placa').value = '';
+      document.getElementById('crear-cliente').value = '';
+      window.location.href = `/formulario/${data.id}`;
+    } else {
+      showToast(data.error || 'Error al crear el servicio', 'error');
+    }
+  } catch (e) {
+    showToast('Error de conexión', 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = 'Crear e iniciar peritaje →';
+}
+document.getElementById('crear-placa').addEventListener('keydown', e => { if (e.key==='Enter') crearServicio(); });
+
+// ─── Descargar PDF ────────────────────────────────────────────────────────────
+function descargarPDF(sid) {
+  window.location.href = `/api/servicios/${sid}/pdf`;
+}
+
+// ─── Dar salida (cerrar) ──────────────────────────────────────────────────────
+async function darSalida(sid, placa) {
+  if (!confirm(`¿Confirma dar salida al vehículo ${placa}? El servicio se retirará de la bitácora.`)) return;
+  try {
+    await fetch(`/api/servicios/${sid}/cerrar`, {method: 'POST'});
+    showToast(`Vehículo ${placa} retirado de la bitácora`);
+    cargarActivos();
+  } catch(e) {
+    showToast('Error al cerrar el servicio', 'error');
+  }
+}
+
+// ─── Buscar (Consultar) ───────────────────────────────────────────────────────
+async function buscarServicios() {
+  const q = document.getElementById('buscar-input').value.trim();
+  if (!q) return;
+  const res = await fetch(`/api/servicios/buscar?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+  const container = document.getElementById('consulta-results');
+
+  if (!data.length) {
+    container.innerHTML = '<div class="no-results">No se encontraron servicios</div>';
+    return;
+  }
+  container.innerHTML = data.map(s => `
+    <div class="result-item">
+      <div class="result-placa">${s.placa}</div>
+      <div class="result-info">
+        <div class="result-cliente">${s.cliente || 'Sin nombre'}</div>
+        <div class="result-meta">
+          ${tipoBadge(s.tipo_servicio)} ${estadoChip(s.estado)}
+          &nbsp;·&nbsp; ${s.perito_nombre}
+          &nbsp;·&nbsp; ${s.fecha_creacion?.split(' ')[0] || ''}
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-sm btn-sm-blue" onclick="window.location.href='/formulario/${s.id}'">▶ Abrir</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── Buscar (Reimprimir) ──────────────────────────────────────────────────────
+async function buscarReimprimir() {
+  const q = document.getElementById('reimprimir-input').value.trim();
+  if (!q) return;
+  const res = await fetch(`/api/servicios/buscar?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+  const container = document.getElementById('reimprimir-results');
+
+  if (!data.length) {
+    container.innerHTML = '<div class="no-results">No se encontraron servicios</div>';
+    return;
+  }
+  container.innerHTML = data.map(s => `
+    <div class="result-item" style="flex-wrap:wrap;gap:10px">
+      <div class="result-placa">${s.placa}</div>
+      <div class="result-info">
+        <div class="result-cliente">${s.cliente || 'Sin nombre'}</div>
+        <div class="result-meta">
+          ${tipoBadge(s.tipo_servicio)} ${estadoChip(s.estado)}
+          &nbsp;·&nbsp; ${s.fecha_creacion?.split(' ')[0] || ''}
+        </div>
+      </div>
+      <div class="result-actions" style="flex-wrap:wrap">
+        ${s.tiene_pdf ? `
+          <button class="btn-sm btn-sm-green" onclick="window.location.href='/api/servicios/${s.id}/pdf'">📄 Informe PDF</button>
+          <button class="btn-sm btn-sm-blue" onclick="window.location.href='/api/servicios/${s.id}/completo'">📎 PDF Completo</button>
+        ` : '<span style="font-size:.75rem;color:var(--texto-suave)">Sin PDF generado</span>'}
+        <label class="btn-sm btn-sm-orange" style="cursor:pointer">
+          📂 Cargar CIR
+          <input type="file" accept="application/pdf" style="display:none"
+                 onchange="subirCIR(${s.id}, this)">
+        </label>
+      </div>
+      <div id="cir-status-${s.id}" style="width:100%;font-size:.75rem;color:var(--texto-suave);padding-left:4px"></div>
+    </div>
+  `).join('');
+
+  // Check CIR status for each
+  data.forEach(async s => {
+    const r = await fetch(`/api/servicios/${s.id}/tiene_cir`);
+    const d = await r.json();
+    const el = document.getElementById(`cir-status-${s.id}`);
+    if (el && d.tiene_cir) el.textContent = `✅ CIR cargado: ${d.nombre}`;
+  });
+}
+
+async function subirCIR(sid, input) {
+  if (!input.files || !input.files[0]) return;
+  const formData = new FormData();
+  formData.append('cir', input.files[0]);
+  try {
+    const res = await fetch(`/api/servicios/${sid}/cir`, {method: 'POST', body: formData});
+    const data = await res.json();
+    if (data.ok) {
+      showToast('CIR/Antecedentes cargado correctamente');
+      const el = document.getElementById(`cir-status-${sid}`);
+      if (el) el.textContent = `✅ CIR cargado: ${input.files[0].name}`;
+    }
+  } catch(e) {
+    showToast('Error al cargar el archivo', 'error');
+  }
+}
+
+// ─── Auto-refresh ─────────────────────────────────────────────────────────────
+cargarActivos();
+setInterval(() => {
+  if (document.getElementById('panel-bitacora').classList.contains('active')) {
+    cargarActivos();
+  }
+}, 6000);
+</script>
+</body>
+</html>

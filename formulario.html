@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Peritaje Vehicular</title>
+<title>PeritGo — Peritaje {{ placa }}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
 
@@ -271,6 +271,41 @@
   }
   .btn-add:hover { background: var(--azul); color: white; }
 
+  /* ── Resultado automático de sección ── */
+  .resultado-seccion {
+    margin-top: 14px;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: .9rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--verde);
+    transition: background .3s;
+  }
+  .resultado-seccion .res-pct {
+    font-size: 1.6rem;
+    font-weight: 800;
+    min-width: 60px;
+    text-align: center;
+  }
+  .resultado-seccion .res-barra-wrap {
+    flex: 1;
+    background: rgba(255,255,255,.3);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .resultado-seccion .res-barra-fill {
+    height: 100%;
+    background: white;
+    border-radius: 4px;
+    transition: width .5s ease;
+  }
+  #lbl-upload:hover { background: var(--azul-dark); }
+
   /* ── Calificación visual ── */
   .cal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .cal-card {
@@ -381,8 +416,15 @@
 <body>
 
 <header>
-  <div class="logo">Perito<span>.com</span></div>
-  <div class="subtitle">Sistema de Inspección Vehicular</div>
+  <a href="/bitacora" style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:500;background:rgba(255,255,255,.15);padding:6px 13px;border-radius:8px;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
+    ← Bitácora
+  </a>
+  <div class="logo" style="margin-left:8px">Perit<span>Go</span></div>
+  <div style="display:flex;flex-direction:column;margin-left:12px;gap:1px">
+    <span style="font-size:.95rem;font-weight:700;color:white;letter-spacing:.5px">{{ placa }}</span>
+    <span style="font-size:.75rem;color:rgba(255,255,255,.7)">{{ cliente or 'Sin nombre' }} · {{ tipo_servicio }}</span>
+  </div>
+  <div class="subtitle" style="margin-left:auto">👤 {{ usuario }}</div>
 </header>
 
 <div class="container">
@@ -533,10 +575,7 @@
     <div class="seccion-header"><div class="num">5</div><h2>Motor</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-motor"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_motor" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-motor"></div>
     </div>
   </div>
 
@@ -544,10 +583,7 @@
     <div class="seccion-header"><div class="num">6</div><h2>Sistema Eléctrico</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-electrico"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_electrico" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-electrico"></div>
     </div>
   </div>
 
@@ -555,10 +591,7 @@
     <div class="seccion-header"><div class="num">7</div><h2>Fuga de Fluidos</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-fluidos"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_fluidos" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-fluidos"></div>
     </div>
   </div>
 
@@ -566,10 +599,7 @@
     <div class="seccion-header"><div class="num">8</div><h2>Llantas</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-llantas"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_llantas" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-llantas"></div>
     </div>
   </div>
 
@@ -577,10 +607,7 @@
     <div class="seccion-header"><div class="num">9</div><h2>Tren Delantero y Suspensión</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-tren"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_tren" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-tren"></div>
     </div>
   </div>
 
@@ -588,10 +615,7 @@
     <div class="seccion-header"><div class="num">10</div><h2>Interior del Vehículo</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-interior"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_interior" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-interior"></div>
     </div>
   </div>
 
@@ -599,10 +623,7 @@
     <div class="seccion-header"><div class="num">11</div><h2>Prueba de Ruta</h2></div>
     <div class="seccion-body">
       <table class="items-table" id="tabla-ruta"></table>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
-        <label style="font-size:.8rem;font-weight:600;color:var(--texto-suave)">Resultado %:</label>
-        <input type="number" id="pct_ruta" value="100" min="0" max="100" style="width:70px;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-      </div>
+      <div class="resultado-seccion" id="res-ruta"></div>
     </div>
   </div>
 
@@ -622,6 +643,30 @@
         <input type="number" id="calificacion_total" min="0" max="100" value="100"
                style="font-size:1.5rem;font-weight:700;color:var(--azul);text-align:center;max-width:120px">
       </div>
+
+      <!-- ── Adjuntar PDF de Antecedentes ── -->
+      <div style="height:24px"></div>
+      <div style="border:2px dashed var(--azul);border-radius:12px;padding:20px;background:var(--azul-light)">
+        <p style="font-size:.8rem;font-weight:700;color:var(--azul);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:1.1rem">📎</span> Adjuntar Informe de Antecedentes (PDF)
+        </p>
+        <p style="font-size:.78rem;color:var(--texto-suave);margin-bottom:14px">
+          Opcional — Al adjuntar un PDF de antecedentes, se fusionará automáticamente al final del informe generado para obtener un documento completo.
+        </p>
+        <label id="lbl-upload" style="display:inline-flex;align-items:center;gap:8px;background:var(--azul);color:white;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:background .2s">
+          <span>📂</span> Seleccionar archivo PDF
+          <input type="file" id="pdf_antecedentes" accept="application/pdf" style="display:none" onchange="onPdfChange(this)">
+        </label>
+        <div id="pdf-preview" style="display:none;margin-top:14px;background:white;border:1.5px solid var(--borde);border-radius:8px;padding:12px 16px;display:none;align-items:center;gap:12px">
+          <span style="font-size:1.5rem">📄</span>
+          <div style="flex:1">
+            <p id="pdf-nombre" style="font-size:.88rem;font-weight:600;color:var(--texto);margin:0"></p>
+            <p id="pdf-tamano" style="font-size:.75rem;color:var(--texto-suave);margin:0"></p>
+          </div>
+          <button onclick="quitarPdf()" style="background:none;border:none;color:var(--rojo);cursor:pointer;font-size:1.1rem;padding:4px" title="Quitar archivo">✕</button>
+        </div>
+        <p id="pdf-aviso" style="display:none;margin-top:10px;font-size:.78rem;color:var(--rojo);font-weight:600"></p>
+      </div>
     </div>
   </div>
 
@@ -640,6 +685,8 @@
 
 <script>
 // ─── Definición de secciones y pasos ─────────────────────────────────────
+const SERVICIO_ID = {{ servicio_id }};
+
 const STEPS = [
   { id: 'sec1', label: 'Datos\nVehículo' },
   { id: 'sec2', label: 'Docs &\nValores' },
@@ -715,6 +762,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fecha de hoy
   document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
 
+  // Pre-llenar datos desde la bitácora
+  const placaInput = document.getElementById('placa');
+  if (placaInput && !placaInput.value) placaInput.value = '{{ placa }}';
+  const propietarioInput = document.getElementById('propietario');
+  if (propietarioInput && !propietarioInput.value) propietarioInput.value = '{{ cliente }}';
+
   // Construir barra de progreso
   const ps = document.getElementById('progressSteps');
   STEPS.forEach((s, i) => {
@@ -736,48 +789,98 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ─── Tablas de ítems ──────────────────────────────────────────────────
+const PESOS_SECCION = {
+  motor: 20, electrico: 10, fluidos: 10, llantas: 10,
+  tren: 20, interior: 10, ruta: 20,
+};
+const VALOR_ESTADO = { B: 100, R: 50, M: 0 };
+
+function calcularSeccion(secKey) {
+  const items = ITEMS_DEF[secKey];
+  if (!items) return 100;
+  const vals = items.map(([, key]) => {
+    const sel = document.querySelector(`[name="${secKey}_${key}"]:checked`);
+    return sel ? sel.value : 'B';
+  }).filter(v => v !== 'NA').map(v => VALOR_ESTADO[v] ?? 100);
+  return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 100;
+}
+
+function calcularTotal() {
+  let sumaPond = 0, sumaPesos = 0;
+  Object.entries(PESOS_SECCION).forEach(([sec, peso]) => {
+    sumaPond += calcularSeccion(sec) * peso;
+    sumaPesos += peso;
+  });
+  return sumaPesos ? Math.round(sumaPond / sumaPesos) : 100;
+}
+
+function actualizarResultadoSeccion(secKey) {
+  const pct = calcularSeccion(secKey);
+  const el = document.getElementById(`res-${secKey}`);
+  if (!el) return;
+  const color = pct >= 90 ? 'var(--verde)' : pct >= 70 ? 'var(--naranja)' : 'var(--rojo)';
+  const emoji = pct >= 90 ? '✅' : pct >= 70 ? '⚠️' : '❌';
+  const desc = pct >= 90 ? 'Bueno' : pct >= 70 ? 'Regular' : 'Malo';
+  el.style.background = color;
+  el.innerHTML = `
+    <span class="res-pct">${pct}%</span>
+    <div style="flex:1">
+      <div style="margin-bottom:6px">${emoji} Resultado sección: <b>${desc}</b></div>
+      <div class="res-barra-wrap"><div class="res-barra-fill" style="width:${pct}%"></div></div>
+    </div>
+  `;
+  // Actualizar total
+  const total = calcularTotal();
+  const elTotal = document.getElementById('calificacion_total');
+  if (elTotal) elTotal.value = total;
+}
+
 function buildItemsTable(secKey, items) {
   const table = document.getElementById(`tabla-${secKey}`);
   if (!table) return;
+  const n = items.length;
+  const pesoItem = n ? (100 / n).toFixed(1) : 0;
   table.innerHTML = `
     <thead>
       <tr>
         <th style="width:200px">Ítem</th>
-        <th class="center" style="width:80px">Bueno</th>
-        <th class="center" style="width:80px">Regular</th>
-        <th class="center" style="width:80px">Malo</th>
-        <th class="center" style="width:80px">N/A</th>
+        <th class="center" style="width:50px;font-size:.7rem;color:#888">Peso</th>
+        <th class="center" style="width:70px">Bueno</th>
+        <th class="center" style="width:70px">Regular</th>
+        <th class="center" style="width:70px">Malo</th>
+        <th class="center" style="width:70px">N/A</th>
       </tr>
     </thead>
     <tbody>
       ${items.map(([label, key]) => `
         <tr>
           <td>${label}</td>
+          <td style="text-align:center;font-size:.72rem;color:#aaa">${pesoItem}%</td>
           <td><div class="radio-group">
             <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_B" value="B" checked>
-            <label class="b" for="${secKey}_${key}_B" onclick="updateLabel(this)">B</label>
+            <label class="b" for="${secKey}_${key}_B" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">B</label>
           </div></td>
           <td><div class="radio-group">
             <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_R" value="R">
-            <label class="r" for="${secKey}_${key}_R" onclick="updateLabel(this)">R</label>
+            <label class="r" for="${secKey}_${key}_R" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">R</label>
           </div></td>
           <td><div class="radio-group">
             <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_M" value="M">
-            <label class="m" for="${secKey}_${key}_M" onclick="updateLabel(this)">M</label>
+            <label class="m" for="${secKey}_${key}_M" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">M</label>
           </div></td>
           <td><div class="radio-group">
             <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_NA" value="NA">
-            <label class="na" for="${secKey}_${key}_NA" onclick="updateLabel(this)">NA</label>
+            <label class="na" for="${secKey}_${key}_NA" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">NA</label>
           </div></td>
         </tr>
       `).join('')}
     </tbody>
   `;
-  // Marcar el primero
   items.forEach(([, key]) => {
     document.getElementById(`${secKey}_${key}_B`).checked = true;
     updateAllLabels(`${secKey}_${key}`);
   });
+  actualizarResultadoSeccion(secKey);
 }
 
 function updateLabel(label) {
@@ -860,6 +963,15 @@ function goToStep(idx) {
   document.querySelector('.container').scrollTo(0, 0);
   window.scrollTo(0, 0);
   updateNav();
+
+  // Reportar progreso a la bitácora
+  if (SERVICIO_ID) {
+    fetch(`/api/servicios/${SERVICIO_ID}/progreso`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({paso: currentStep})
+    }).catch(() => {});
+  }
 }
 
 function updateNav() {
@@ -879,13 +991,18 @@ function recopilarDatos() {
    'servicio','kilometraje','no_chasis','no_serial','no_motor','propietario',
    'documento','duenos_anteriores','aseguradora','cuantos_siniestros','valor_reclamaciones',
    'val_revista_motor','val_fasecolda','val_mercado','val_accesorios','val_depreciacion',
-   'val_elperito','pct_carroceria','pct_chasis','calificacion_total',
+   'val_elperito','pct_carroceria','pct_chasis',
    'llanta_del_vida','llanta_del_psi','llanta_tra_vida','llanta_tra_psi',
-   'pct_motor','pct_electrico','pct_fluidos','pct_llantas','pct_tren','pct_interior','pct_ruta',
   ].forEach(k => {
     const el = document.getElementById(k);
     if (el) d[k] = el.value;
   });
+
+  // Puntajes calculados automáticamente
+  ['motor','electrico','fluidos','llantas','tren','interior','ruta'].forEach(sec => {
+    d[`pct_${sec}`] = calcularSeccion(sec);
+  });
+  d['calificacion_total'] = calcularTotal();
 
   // Checkboxes
   ['tarjeta_propiedad','soat','rev_tecnomecanica','llantas_cambio','susp_del_cambio','susp_tra_cambio']
@@ -934,17 +1051,57 @@ function recopilarDatos() {
   return d;
 }
 
+// ─── Adjunto PDF antecedentes ─────────────────────────────────────────
+function onPdfChange(input) {
+  const aviso = document.getElementById('pdf-aviso');
+  const preview = document.getElementById('pdf-preview');
+  aviso.style.display = 'none';
+  if (!input.files || !input.files[0]) { preview.style.display = 'none'; return; }
+  const file = input.files[0];
+  if (file.type !== 'application/pdf') {
+    aviso.textContent = '⚠️ Solo se aceptan archivos PDF.';
+    aviso.style.display = 'block';
+    input.value = '';
+    preview.style.display = 'none';
+    return;
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    aviso.textContent = '⚠️ El archivo supera los 20 MB permitidos.';
+    aviso.style.display = 'block';
+    input.value = '';
+    preview.style.display = 'none';
+    return;
+  }
+  document.getElementById('pdf-nombre').textContent = file.name;
+  document.getElementById('pdf-tamano').textContent = `${(file.size / 1024).toFixed(1)} KB`;
+  preview.style.display = 'flex';
+}
+
+function quitarPdf() {
+  const input = document.getElementById('pdf_antecedentes');
+  input.value = '';
+  document.getElementById('pdf-preview').style.display = 'none';
+  document.getElementById('pdf-aviso').style.display = 'none';
+}
+
 async function generarPDF() {
   const datos = recopilarDatos();
   const toast = document.getElementById('toast');
+  toast.textContent = '✓ Generando PDF…';
+  toast.style.background = '';
   toast.classList.add('show');
 
   try {
-    const res = await fetch('/generar_pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(datos),
-    });
+    const formData = new FormData();
+    formData.append('datos', JSON.stringify(datos));
+    if (SERVICIO_ID) formData.append('servicio_id', SERVICIO_ID);
+    const adjunto = document.getElementById('pdf_antecedentes');
+    if (adjunto && adjunto.files && adjunto.files[0]) {
+      formData.append('pdf_antecedentes', adjunto.files[0]);
+      toast.textContent = '⏳ Fusionando documentos…';
+    }
+
+    const res = await fetch('/generar_pdf', { method: 'POST', body: formData });
     if (!res.ok) throw new Error('Error del servidor');
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -953,18 +1110,40 @@ async function generarPDF() {
     a.download = `peritaje_${datos.placa || 'vehiculo'}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.textContent = '✓ PDF generado exitosamente';
+
+    toast.textContent = '✓ Informe generado exitosamente';
+
+    // Mostrar botón volver a bitácora
+    setTimeout(() => {
+      toast.classList.remove('show');
+      if (SERVICIO_ID) mostrarPanelFinal();
+    }, 2500);
+
   } catch (e) {
     toast.textContent = '✗ Error al generar PDF';
     toast.style.background = '#e74c3c';
     console.error(e);
+    setTimeout(() => { toast.classList.remove('show'); toast.style.background = ''; }, 3500);
   }
+}
 
-  setTimeout(() => {
-    toast.classList.remove('show');
-    toast.textContent = '✓ Generando PDF…';
-    toast.style.background = '';
-  }, 3500);
+function mostrarPanelFinal() {
+  // Insertar panel de éxito encima de los botones
+  const nav = document.querySelector('.nav-btns');
+  if (document.getElementById('panel-exito')) return;
+  const div = document.createElement('div');
+  div.id = 'panel-exito';
+  div.style.cssText = 'background:linear-gradient(135deg,#27ae60,#2ecc71);color:white;border-radius:14px;padding:24px 28px;margin-bottom:16px;text-align:center;box-shadow:0 4px 20px rgba(39,174,96,.35)';
+  div.innerHTML = `
+    <div style="font-size:2rem;margin-bottom:8px">✅</div>
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px">Informe generado correctamente</div>
+    <div style="font-size:.85rem;opacity:.85;margin-bottom:18px">El PDF fue descargado y el servicio quedó registrado</div>
+    <a href="/bitacora" style="display:inline-block;background:white;color:#27ae60;font-weight:700;padding:10px 24px;border-radius:9px;text-decoration:none;font-size:.9rem;box-shadow:0 2px 10px rgba(0,0,0,.12)">
+      ← Volver a la Bitácora
+    </a>
+  `;
+  nav.parentNode.insertBefore(div, nav);
+  div.scrollIntoView({behavior: 'smooth', block: 'center'});
 }
 </script>
 </body>
