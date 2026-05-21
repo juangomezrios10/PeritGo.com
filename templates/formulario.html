@@ -4,216 +4,61 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PeritGo — Peritaje {{ placa }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
-
   :root {
-    --azul: #1a73c7;
-    --azul-dark: #0d5fa8;
-    --azul-light: #e8f1fb;
-    --verde: #27ae60;
-    --rojo: #e74c3c;
-    --naranja: #e67e22;
-    --gris: #f7f8fa;
-    --borde: #dde3ec;
-    --texto: #1c2433;
-    --texto-suave: #6b7a8d;
-    --radio: 8px;
-    --sombra: 0 2px 12px rgba(26,115,199,.10);
+    --azul: #5C7A1A; --azul-dark: #3D5112; --azul-light: #EEF4E0;
+    --verde: #27ae60; --rojo: #e74c3c; --naranja: #e67e22;
+    --gris: #f7f8f4; --borde: #d8dfd0; --texto: #1c2415; --texto-suave: #6b7a5a;
+    --radio: 8px; --sombra: 0 2px 12px rgba(92,122,26,.12);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f0f4e8; color: var(--texto); min-height: 100vh; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #f0f4f9;
-    color: var(--texto);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
   header {
-    background: var(--azul);
-    color: white;
-    padding: 18px 32px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 2px 16px rgba(26,115,199,.35);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: var(--azul); color: white; padding: 12px 24px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 2px 16px rgba(61,81,18,.4); position: sticky; top: 0; z-index: 100;
   }
-  header .logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-  header .logo span { color: #7ec8ff; }
-  header .subtitle { font-size: .85rem; opacity: .8; margin-left: auto; }
+  header .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.5px; }
+  header .logo span { color: #c5e07a; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
 
-  /* ── Layout ── */
-  .container { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
-
-  /* ── Progreso ── */
-  .progress-bar-wrap {
-    background: white;
-    border-radius: 12px;
-    padding: 16px 24px;
-    margin-bottom: 28px;
-    box-shadow: var(--sombra);
-  }
-  .progress-steps {
-    display: flex;
-    gap: 0;
-    position: relative;
-  }
-  .progress-steps::before {
-    content: '';
-    position: absolute;
-    top: 14px;
-    left: 0; right: 0;
-    height: 2px;
-    background: var(--borde);
-    z-index: 0;
-  }
-  .step {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    position: relative;
-    z-index: 1;
-    cursor: pointer;
-  }
-  .step-dot {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: white;
-    border: 2px solid var(--borde);
-    display: flex; align-items: center; justify-content: center;
-    font-size: .75rem;
-    font-weight: 600;
-    color: var(--texto-suave);
-    transition: all .25s;
-  }
-  .step.active .step-dot {
-    background: var(--azul);
-    border-color: var(--azul);
-    color: white;
-    box-shadow: 0 0 0 4px rgba(26,115,199,.2);
-  }
+  .progress-bar-wrap { background: white; border-radius: 12px; padding: 13px 18px; margin-bottom: 22px; box-shadow: var(--sombra); }
+  .progress-steps { display: flex; position: relative; }
+  .progress-steps::before { content: ''; position: absolute; top: 13px; left: 0; right: 0; height: 2px; background: var(--borde); z-index: 0; }
+  .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; z-index: 1; cursor: pointer; }
+  .step-dot { width: 26px; height: 26px; border-radius: 50%; background: white; border: 2px solid var(--borde); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 600; color: var(--texto-suave); transition: all .2s; }
+  .step.active .step-dot { background: var(--azul); border-color: var(--azul); color: white; box-shadow: 0 0 0 4px rgba(92,122,26,.2); }
   .step.done .step-dot { background: var(--verde); border-color: var(--verde); color: white; }
-  .step-label { font-size: .65rem; color: var(--texto-suave); text-align: center; max-width: 60px; }
+  .step-label { font-size: .58rem; color: var(--texto-suave); text-align: center; max-width: 52px; }
   .step.active .step-label { color: var(--azul); font-weight: 600; }
 
-  /* ── Secciones del formulario ── */
-  .seccion {
-    background: white;
-    border-radius: 12px;
-    box-shadow: var(--sombra);
-    margin-bottom: 24px;
-    overflow: hidden;
-    display: none;
-    animation: fadeIn .3s ease;
-  }
+  .seccion { background: white; border-radius: 12px; box-shadow: var(--sombra); margin-bottom: 18px; overflow: hidden; display: none; animation: fadeIn .3s ease; }
   .seccion.visible { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+  .seccion-header { background: var(--azul); color: white; padding: 11px 18px; display: flex; align-items: center; gap: 10px; }
+  .seccion-header .num { background: rgba(255,255,255,.2); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .76rem; font-weight: 700; }
+  .seccion-header h2 { font-size: .9rem; font-weight: 600; }
+  .seccion-body { padding: 16px; }
 
-  .seccion-header {
-    background: var(--azul);
-    color: white;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .seccion-header .num {
-    background: rgba(255,255,255,.2);
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .8rem;
-    font-weight: 700;
-  }
-  .seccion-header h2 { font-size: 1rem; font-weight: 600; }
-  .seccion-body { padding: 20px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .campo { display: flex; flex-direction: column; gap: 4px; }
+  .campo label { font-size: .7rem; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: .4px; }
+  .campo input, .campo select, .campo textarea { border: 1.5px solid var(--borde); border-radius: var(--radio); padding: 8px 11px; font-size: .87rem; font-family: inherit; color: var(--texto); background: var(--gris); outline: none; transition: border-color .2s; }
+  .campo input:focus, .campo select:focus, .campo textarea:focus { border-color: var(--azul); box-shadow: 0 0 0 3px rgba(92,122,26,.1); background: white; }
 
-  /* ── Grids de campos ── */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
-  .col-full { grid-column: 1 / -1; }
-
-  /* ── Campos ── */
-  .campo { display: flex; flex-direction: column; gap: 5px; }
-  .campo label {
-    font-size: .75rem;
-    font-weight: 600;
-    color: var(--texto-suave);
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  .campo input, .campo select, .campo textarea {
-    border: 1.5px solid var(--borde);
-    border-radius: var(--radio);
-    padding: 9px 12px;
-    font-size: .9rem;
-    font-family: inherit;
-    color: var(--texto);
-    background: var(--gris);
-    transition: border-color .2s, box-shadow .2s;
-    outline: none;
-  }
-  .campo input:focus, .campo select:focus, .campo textarea:focus {
-    border-color: var(--azul);
-    box-shadow: 0 0 0 3px rgba(26,115,199,.12);
-    background: white;
-  }
-
-  /* ── Tabla de ítems B/R/M ── */
-  .items-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .85rem;
-  }
-  .items-table th {
-    background: var(--azul-light);
-    color: var(--azul);
-    font-weight: 600;
-    padding: 8px 10px;
-    text-align: left;
-    font-size: .75rem;
-    text-transform: uppercase;
-    letter-spacing: .3px;
-  }
+  /* ── Ítems B/R/M ── */
+  .items-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .items-table th { background: var(--azul-light); color: var(--azul); font-weight: 600; padding: 6px 8px; text-align: left; font-size: .7rem; text-transform: uppercase; }
   .items-table th.center { text-align: center; }
-  .items-table td {
-    padding: 7px 10px;
-    border-bottom: 1px solid var(--borde);
-    vertical-align: middle;
-  }
+  .items-table td { padding: 6px 8px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
   .items-table tr:last-child td { border-bottom: none; }
   .items-table tr:hover td { background: var(--gris); }
-  .radio-group {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-  }
-  .radio-group label {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    cursor: pointer;
-    font-size: .8rem;
-    font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 20px;
-    border: 1.5px solid var(--borde);
-    transition: all .15s;
-  }
+  .radio-group { display: flex; gap: 4px; justify-content: center; }
+  .radio-group label { display: flex; align-items: center; cursor: pointer; font-size: .76rem; font-weight: 500; padding: 3px 7px; border-radius: 20px; border: 1.5px solid var(--borde); transition: all .15s; }
   .radio-group input[type=radio] { display: none; }
   .radio-group label.b { color: var(--verde); border-color: var(--verde); }
   .radio-group label.b.checked { background: var(--verde); color: white; }
@@ -224,927 +69,723 @@
   .radio-group label.na { color: var(--texto-suave); border-color: var(--borde); }
   .radio-group label.na.checked { background: var(--texto-suave); color: white; }
 
-  /* ── Observaciones ── */
+  /* ── Esquema carrocería / estructura ── */
+  .esquema-wrap { border: 2px solid var(--azul); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+  .esquema-titulo { background: var(--azul); color: white; padding: 8px 16px; font-size: .84rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .esquema-col-headers { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--azul-light); border-bottom: 1px solid var(--borde); }
+  .esquema-col-h { padding: 6px 4px; font-size: .66rem; font-weight: 700; color: var(--azul); text-align: center; text-transform: uppercase; letter-spacing: .3px; }
+  .esquema-col-h:nth-child(2) { border-left: 1px solid var(--borde); border-right: 1px solid var(--borde); }
+  .esquema-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; padding: 10px; }
+  .esquema-separador { grid-column: 1/-1; border: none; border-top: 1.5px dashed var(--borde); margin: 2px 0; }
+
+  .parte-btn {
+    background: white; border: 2px solid var(--borde); border-radius: 8px;
+    padding: 6px 6px; cursor: pointer; text-align: center; transition: all .15s;
+    user-select: none; min-height: 48px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px; position: relative;
+  }
+  .parte-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.1); }
+  .parte-btn .pnombre { font-size: .64rem; font-weight: 600; color: var(--texto); line-height: 1.2; }
+  .parte-badge { font-size: .58rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; color: white; text-align: center; width: 100%; }
+  .parte-critico { position: absolute; top: -6px; right: -6px; font-size: .65rem; background: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+
+  /* Criterio colors */
+  .c-OK  { background: #5C7A1A; border-color: #5C7A1A; }
+  .c-REP { background: #3498db; border-color: #3498db; }
+  .c-BR  { background: #1abc9c; border-color: #1abc9c; }
+  .c-MR  { background: #e67e22; border-color: #e67e22; }
+  .c-BS  { background: #2980b9; border-color: #2980b9; }
+  .c-MS  { background: #c0392b; border-color: #c0392b; }
+  .c-REG { background: #f39c12; border-color: #f39c12; }
+  .c-SUM { background: #7d6608; border-color: #7d6608; }
+  .c-DM  { background: #d35400; border-color: #d35400; }
+  .c-DF  { background: #922b21; border-color: #922b21; }
+
+  .border-c-OK  { border-color: #5C7A1A; }
+  .border-c-REP { border-color: #3498db; }
+  .border-c-BR  { border-color: #1abc9c; }
+  .border-c-MR  { border-color: #e67e22; }
+  .border-c-BS  { border-color: #2980b9; }
+  .border-c-MS  { border-color: #c0392b; }
+  .border-c-REG { border-color: #f39c12; }
+  .border-c-SUM { border-color: #7d6608; }
+  .border-c-DM  { border-color: #d35400; }
+  .border-c-DF  { border-color: #922b21; }
+
+  .aviso-estructural { background: #fff8e1; border: 1.5px solid #f9a825; border-radius: 8px; padding: 8px 13px; font-size: .76rem; color: #7c5800; margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+
+  /* ── Modal criterio ── */
+  .part-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
+  .part-modal-overlay.open { display: flex; }
+  .part-modal { background: white; border-radius: 20px 20px 0 0; width: 100%; max-width: 460px; padding: 18px 16px 32px; box-shadow: 0 -8px 40px rgba(0,0,0,.25); animation: slideUp2 .25s ease; }
+  @keyframes slideUp2 { from{transform:translateY(100%);} to{transform:none;} }
+  .part-modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .part-modal-titulo { font-size: .9rem; font-weight: 700; color: var(--texto); }
+  .part-modal-sub { font-size: .72rem; color: var(--texto-suave); margin-bottom: 14px; }
+  .part-modal-close { background: var(--gris); border: none; color: var(--texto-suave); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: .9rem; font-family: inherit; }
+  .criterios-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .criterio-btn {
+    padding: 10px 8px; border-radius: 9px; border: none; cursor: pointer;
+    font-size: .78rem; font-weight: 700; color: white; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all .15s;
+  }
+  .criterio-btn .c-nota { font-size: .6rem; font-weight: 400; opacity: .85; text-align: center; }
+  .criterio-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+  .criterio-btn.selected { box-shadow: 0 0 0 4px rgba(0,0,0,.3); }
+  .criterios-sep { grid-column: 1/-1; border-top: 1.5px dashed rgba(0,0,0,.1); margin: 2px 0; }
+  .criterios-sep-label { grid-column: 1/-1; font-size: .65rem; color: #888; font-weight: 600; text-align: center; margin: -2px 0; }
+
+  /* ── Resultado sección ── */
+  .resultado-seccion { margin-top: 10px; padding: 10px 14px; border-radius: 8px; font-size: .86rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; background: var(--verde); transition: background .3s; }
+  .resultado-seccion .res-pct { font-size: 1.5rem; font-weight: 800; min-width: 54px; text-align: center; }
+  .resultado-seccion .res-barra-wrap { flex: 1; background: rgba(255,255,255,.3); height: 7px; border-radius: 4px; overflow: hidden; }
+  .resultado-seccion .res-barra-fill { height: 100%; background: white; border-radius: 4px; transition: width .5s ease; }
+
+  /* ── Obs ── */
   .obs-list { display: flex; flex-direction: column; gap: 8px; }
-  .obs-item {
-    display: grid;
-    grid-template-columns: 140px 1fr 36px;
-    gap: 8px;
-    align-items: center;
-    background: var(--gris);
-    padding: 8px 10px;
-    border-radius: var(--radio);
-    border: 1px solid var(--borde);
-  }
-  .obs-item select, .obs-item input {
-    border: 1.5px solid var(--borde);
-    border-radius: 6px;
-    padding: 6px 8px;
-    font-size: .85rem;
-    font-family: inherit;
-    background: white;
-    outline: none;
-  }
-  .badge-aviso { background: #f39c12; color: white; }
-  .badge-pendiente { background: var(--azul); color: white; }
-  .badge-inmediato { background: var(--rojo); color: white; }
-  .btn-remove {
-    background: none;
-    border: none;
-    color: var(--rojo);
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 4px;
-  }
-  .btn-add {
-    background: var(--azul-light);
-    color: var(--azul);
-    border: 1.5px dashed var(--azul);
-    border-radius: var(--radio);
-    padding: 8px 16px;
-    font-size: .85rem;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 8px;
-    transition: all .2s;
-  }
+  .obs-item { display: grid; grid-template-columns: 140px 1fr 36px; gap: 8px; align-items: center; background: var(--gris); padding: 7px 9px; border-radius: 8px; border: 1px solid var(--borde); }
+  .obs-item select, .obs-item input { border: 1.5px solid var(--borde); border-radius: 6px; padding: 5px 8px; font-size: .82rem; font-family: inherit; background: white; outline: none; }
+  .btn-remove { background: none; border: none; color: var(--rojo); cursor: pointer; font-size: 1.1rem; padding: 4px; }
+  .btn-add { background: var(--azul-light); color: var(--azul); border: 1.5px dashed var(--azul); border-radius: var(--radio); padding: 7px 14px; font-size: .82rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px; transition: all .2s; font-family: inherit; }
   .btn-add:hover { background: var(--azul); color: white; }
 
-  /* ── Resultado automático de sección ── */
-  .resultado-seccion {
-    margin-top: 14px;
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-size: .9rem;
-    font-weight: 700;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--verde);
-    transition: background .3s;
-  }
-  .resultado-seccion .res-pct {
-    font-size: 1.6rem;
-    font-weight: 800;
-    min-width: 60px;
-    text-align: center;
-  }
-  .resultado-seccion .res-barra-wrap {
-    flex: 1;
-    background: rgba(255,255,255,.3);
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .resultado-seccion .res-barra-fill {
-    height: 100%;
-    background: white;
-    border-radius: 4px;
-    transition: width .5s ease;
-  }
-  #lbl-upload:hover { background: var(--azul-dark); }
+  /* ── Aprobación ── */
+  .aprobacion-panel { background: white; border: 2px solid var(--borde); border-radius: 13px; padding: 16px 16px 18px; margin-top: 18px; }
+  .aprobacion-panel h3 { font-size: .9rem; font-weight: 700; color: var(--texto); margin-bottom: 3px; }
+  .aprobacion-panel .ap-sub { font-size: .76rem; color: var(--texto-suave); margin-bottom: 13px; }
+  .aprobacion-btns { display: flex; gap: 10px; }
+  .btn-aprob { flex: 1; padding: 12px 10px; border-radius: 10px; border: 2.5px solid; font-size: .92rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .2s; }
+  .btn-aprob.aprobado { border-color: var(--verde); color: var(--verde); background: white; }
+  .btn-aprob.aprobado.active { background: var(--verde); color: white; }
+  .btn-aprob.no-aprobado { border-color: var(--rojo); color: var(--rojo); background: white; }
+  .btn-aprob.no-aprobado.active { background: var(--rojo); color: white; }
+  .aprob-nota { margin-top: 9px; font-size: .76rem; color: var(--texto-suave); text-align: center; }
 
-  /* ── Calificación visual ── */
-  .cal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  .cal-card {
-    background: var(--gris);
-    border: 1.5px solid var(--borde);
-    border-radius: 10px;
-    padding: 14px;
-    text-align: center;
-  }
-  .cal-card label { font-size: .7rem; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; }
-  .cal-card .pct {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--azul);
-    margin: 4px 0 2px;
-  }
-  .cal-bar { height: 6px; border-radius: 3px; background: var(--borde); margin-top: 6px; overflow: hidden; }
-  .cal-bar-fill { height: 100%; border-radius: 3px; background: var(--verde); transition: width .4s; }
-
-  /* ── Botones de navegación ── */
-  .nav-btns {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 20px;
-  }
-  .btn {
-    padding: 10px 24px;
-    border-radius: var(--radio);
-    border: none;
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all .2s;
-  }
-  .btn-secondary {
-    background: white;
-    color: var(--texto);
-    border: 1.5px solid var(--borde);
-  }
+  /* ── Nav ── */
+  .nav-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+  .btn { padding: 10px 20px; border-radius: var(--radio); border: none; font-size: .87rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s; font-family: inherit; }
+  .btn-secondary { background: white; color: var(--texto); border: 1.5px solid var(--borde); }
   .btn-secondary:hover { background: var(--gris); }
-  .btn-primary {
-    background: var(--azul);
-    color: white;
-    box-shadow: 0 2px 8px rgba(26,115,199,.3);
-  }
+  .btn-primary { background: var(--azul); color: white; box-shadow: 0 2px 8px rgba(92,122,26,.3); }
   .btn-primary:hover { background: var(--azul-dark); transform: translateY(-1px); }
-  .btn-success {
-    background: var(--verde);
-    color: white;
-    box-shadow: 0 2px 8px rgba(39,174,96,.3);
-    font-size: 1rem;
-    padding: 12px 32px;
-  }
-  .btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-success { background: var(--verde); color: white; box-shadow: 0 2px 8px rgba(39,174,96,.3); font-size: .92rem; padding: 11px 26px; }
+  .btn-success:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
-  /* ── Daños carrocería ── */
-  .dano-item {
-    display: grid;
-    grid-template-columns: 1fr 120px 1fr 36px;
-    gap: 8px;
-    align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--borde);
-  }
-
-  /* ── Resumen final ── */
-  .resumen-card {
-    background: linear-gradient(135deg, var(--azul), var(--azul-dark));
-    color: white;
-    border-radius: 14px;
-    padding: 28px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .resumen-card .big-num {
-    font-size: 4rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .resumen-card .label { opacity: .8; font-size: .9rem; margin-top: 4px; }
-
-  .toast {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    background: var(--verde);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    box-shadow: 0 4px 20px rgba(0,0,0,.2);
-    display: none;
-    z-index: 999;
-  }
+  .toast { position: fixed; bottom: 22px; right: 22px; background: var(--verde); color: white; padding: 11px 18px; border-radius: 10px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; z-index: 999; }
   .toast.show { display: block; animation: slideUp .3s ease; }
-  @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: none; opacity:1; } }
+  @keyframes slideUp { from{transform:translateY(18px);opacity:0;} to{transform:none;opacity:1;} }
 
-  @media (max-width: 700px) {
-    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-    .cal-grid { grid-template-columns: 1fr 1fr; }
-    .obs-item { grid-template-columns: 1fr; }
-  }
+  @media(max-width:700px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} .criterios-grid{grid-template-columns:1fr 1fr;} }
 </style>
 </head>
 <body>
 
 <header>
-  <a href="/bitacora" style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:500;background:rgba(255,255,255,.15);padding:6px 13px;border-radius:8px;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
-    ← Bitácora
-  </a>
-  <div class="logo" style="margin-left:8px">Perit<span>Go</span></div>
-  <div style="display:flex;flex-direction:column;margin-left:12px;gap:1px">
-    <span style="font-size:.95rem;font-weight:700;color:white;letter-spacing:.5px">{{ placa }}</span>
-    <span style="font-size:.75rem;color:rgba(255,255,255,.7)">{{ cliente or 'Sin nombre' }} · {{ tipo_servicio }}</span>
+  <a href="/bitacora" style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.8rem;font-weight:500;background:rgba(255,255,255,.15);padding:5px 11px;border-radius:7px">← Bitácora</a>
+  <div class="logo" style="margin-left:6px">Perit<span>Go</span></div>
+  <div style="display:flex;flex-direction:column;margin-left:8px">
+    <span style="font-size:.88rem;font-weight:700;color:white;letter-spacing:.5px">{{ placa }}</span>
+    <span style="font-size:.7rem;color:rgba(255,255,255,.7)">{{ cliente or 'Sin nombre' }} · {{ tipo_servicio }}</span>
   </div>
-  <div class="subtitle" style="margin-left:auto">👤 {{ usuario }}</div>
+  <div style="margin-left:auto;font-size:.78rem;color:rgba(255,255,255,.8)">👤 {{ usuario }}</div>
 </header>
 
 <div class="container">
 
-  <!-- Barra de progreso -->
-  <div class="progress-bar-wrap">
-    <div class="progress-steps" id="progressSteps"></div>
-  </div>
-
-  <!-- ───────────── SECCIÓN 1: Datos del vehículo ───────────── -->
-  <div class="seccion visible" id="sec1">
-    <div class="seccion-header"><div class="num">1</div><h2>Datos del Vehículo</h2></div>
-    <div class="seccion-body">
-      <div class="grid-4">
-        <div class="campo"><label>No. de Servicio</label><input type="text" id="no_servicio" value="001"></div>
-        <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
-        <div class="campo"><label>Placa</label><input type="text" id="placa" placeholder="ABC123" style="text-transform:uppercase"></div>
-        <div class="campo"><label>Tipo de Peritaje</label>
-          <select id="tipo_peritaje"><option>Completo</option><option>Básico</option></select>
-        </div>
-      </div>
-      <div style="height:14px"></div>
-      <div class="grid-4">
-        <div class="campo"><label>Clase</label><input type="text" id="clase" value="Automóvil"></div>
-        <div class="campo"><label>Marca</label><input type="text" id="marca" placeholder="Chevrolet"></div>
-        <div class="campo"><label>Línea</label><input type="text" id="linea" placeholder="Spark"></div>
-        <div class="campo"><label>Carrocería</label><input type="text" id="carroceria" value="Hatch Back"></div>
-        <div class="campo"><label>Modelo</label><input type="number" id="modelo" placeholder="2023"></div>
-        <div class="campo"><label>Color</label><input type="text" id="color" placeholder="Negro Titán"></div>
-        <div class="campo"><label>Nacionalidad</label><input type="text" id="nacionalidad" value="Colombia"></div>
-        <div class="campo"><label>Tipo de Caja</label>
-          <select id="tipo_caja"><option>Mecánica</option><option>Automática</option><option>CVT</option></select>
-        </div>
-        <div class="campo"><label>Cilindraje (cc)</label><input type="number" id="cilindraje" placeholder="995"></div>
-        <div class="campo"><label>Combustible</label>
-          <select id="combustible"><option>Gasolina</option><option>Diesel</option><option>Eléctrico</option><option>Gas</option></select>
-        </div>
-        <div class="campo"><label>Pintura</label>
-          <select id="pintura"><option>Plana</option><option>Metálica</option><option>Perlada</option></select>
-        </div>
-        <div class="campo"><label>Servicio</label>
-          <select id="servicio"><option>Particular</option><option>Público</option><option>Oficial</option></select>
-        </div>
-        <div class="campo"><label>Kilometraje</label><input type="number" id="kilometraje" placeholder="129199"></div>
-        <div class="campo"><label>No. Chasis</label><input type="text" id="no_chasis"></div>
-        <div class="campo"><label>No. Serial</label><input type="text" id="no_serial"></div>
-        <div class="campo"><label>No. Motor</label><input type="text" id="no_motor"></div>
-      </div>
-      <div style="height:14px"></div>
-      <div class="grid-3">
-        <div class="campo"><label>Propietario</label><input type="text" id="propietario"></div>
-        <div class="campo"><label>Documento / NIT</label><input type="text" id="documento"></div>
-        <div class="campo"><label>Dueños anteriores</label><input type="number" id="duenos_anteriores" value="0"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ───────────── SECCIÓN 2+3: Documentación y Valores ───────────── -->
-  <div class="seccion" id="sec2">
-    <div class="seccion-header"><div class="num">2-3</div><h2>Documentación y Valores</h2></div>
-    <div class="seccion-body">
-      <div class="grid-3">
-        <div class="campo"><label>Aseguradora</label><input type="text" id="aseguradora" placeholder="Allianz"></div>
-        <div class="campo"><label>Reporta Siniestros</label>
-          <select id="reporta_siniestros"><option value="0">No</option><option value="1">Sí</option></select>
-        </div>
-        <div class="campo"><label>Cuántos siniestros</label><input type="number" id="cuantos_siniestros" value="0"></div>
-        <div class="campo"><label>Valor reclamaciones ($)</label><input type="text" id="valor_reclamaciones" placeholder="0"></div>
-      </div>
-      <div style="height:14px"></div>
-      <div class="grid-3">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="tarjeta_propiedad" checked> Tarjeta de propiedad
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="soat" checked> SOAT vigente
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="rev_tecnomecanica" checked> Rev. Tecnomecánica
-        </label>
-      </div>
-      <div style="height:20px"></div>
-      <h3 style="font-size:.9rem;color:var(--texto-suave);margin-bottom:12px">VALORES COMERCIALES</h3>
-      <div class="grid-3">
-        <div class="campo"><label>Revista Motor ($)</label><input type="text" id="val_revista_motor" placeholder="0"></div>
-        <div class="campo"><label>Fasecolda ($)</label><input type="text" id="val_fasecolda" placeholder="0"></div>
-        <div class="campo"><label>Mercado ($)</label><input type="text" id="val_mercado" placeholder="0"></div>
-        <div class="campo"><label>Accesorios ($)</label><input type="text" id="val_accesorios" placeholder="0"></div>
-        <div class="campo"><label>Depreciación ($)</label><input type="text" id="val_depreciacion" placeholder="0"></div>
-        <div class="campo"><label>Valor Elperito ($)</label><input type="text" id="val_elperito" placeholder="0"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ───────────── SECCIÓN 4: Inspección Visual ───────────── -->
-  <div class="seccion" id="sec4">
-    <div class="seccion-header"><div class="num">4</div><h2>Inspección Visual y Técnica</h2></div>
-    <div class="seccion-body">
-      <div class="grid-2">
-        <div>
-          <label style="font-size:.75rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase">% Carrocería</label>
-          <input type="number" id="pct_carroceria" min="0" max="100" value="100" style="width:80px;margin:4px 0;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-          <label style="font-size:.75rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;display:block;margin-top:10px">% Chasis/Estructura</label>
-          <input type="number" id="pct_chasis" min="0" max="100" value="100" style="width:80px;margin:4px 0;padding:6px;border:1.5px solid var(--borde);border-radius:6px">
-        </div>
-        <div>
-          <p style="font-size:.8rem;font-weight:600;color:var(--texto-suave);margin-bottom:8px">COMPRESIÓN MOTOR (PSI)</p>
-          <div class="grid-4" style="gap:8px">
-            <div class="campo"><label>Cil 1</label><input type="number" id="cil1" placeholder="122"></div>
-            <div class="campo"><label>Cil 2</label><input type="number" id="cil2" placeholder="122"></div>
-            <div class="campo"><label>Cil 3</label><input type="number" id="cil3" placeholder="122"></div>
-            <div class="campo"><label>Cil 4</label><input type="number" id="cil4" placeholder="122"></div>
-            <div class="campo"><label>Cil 5</label><input type="number" id="cil5"></div>
-            <div class="campo"><label>Cil 6</label><input type="number" id="cil6"></div>
-            <div class="campo"><label>Cil 7</label><input type="number" id="cil7"></div>
-            <div class="campo"><label>Cil 8</label><input type="number" id="cil8"></div>
-          </div>
-        </div>
-      </div>
-      <div style="height:16px"></div>
-      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:8px">Llantas y Amortiguadores</p>
-      <div class="grid-4">
-        <div class="campo"><label>Vida útil delantera (%)</label><input type="number" id="llanta_del_vida" value="0" min="0" max="100"></div>
-        <div class="campo"><label>Presión delantera (PSI)</label><input type="number" id="llanta_del_psi" value="38"></div>
-        <div class="campo"><label>Vida útil trasera (%)</label><input type="number" id="llanta_tra_vida" value="0" min="0" max="100"></div>
-        <div class="campo"><label>Presión trasera (PSI)</label><input type="number" id="llanta_tra_psi" value="38"></div>
-      </div>
-      <div class="grid-3" style="margin-top:10px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="llantas_cambio"> Llantas requieren cambio
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="susp_del_cambio"> Suspensión delantera cambio
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="susp_tra_cambio"> Suspensión trasera cambio
-        </label>
-      </div>
-      <div style="height:16px"></div>
-      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:8px">Daños en Carrocería</p>
-      <div id="danos-list"></div>
-      <button class="btn-add" onclick="addDano()">+ Agregar daño</button>
-    </div>
-  </div>
-
-  <!-- ───────────── SECCIÓN 5-11: Ítems técnicos ───────────── -->
-  <div class="seccion" id="sec5">
-    <div class="seccion-header"><div class="num">5</div><h2>Motor</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-motor"></table>
-      <div class="resultado-seccion" id="res-motor"></div>
-    </div>
-  </div>
-
-  <div class="seccion" id="sec6">
-    <div class="seccion-header"><div class="num">6</div><h2>Sistema Eléctrico</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-electrico"></table>
-      <div class="resultado-seccion" id="res-electrico"></div>
-    </div>
-  </div>
-
-  <div class="seccion" id="sec7">
-    <div class="seccion-header"><div class="num">7</div><h2>Fuga de Fluidos</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-fluidos"></table>
-      <div class="resultado-seccion" id="res-fluidos"></div>
-    </div>
-  </div>
-
-  <div class="seccion" id="sec8">
-    <div class="seccion-header"><div class="num">8</div><h2>Llantas</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-llantas"></table>
-      <div class="resultado-seccion" id="res-llantas"></div>
-    </div>
-  </div>
-
-  <div class="seccion" id="sec9">
-    <div class="seccion-header"><div class="num">9</div><h2>Tren Delantero y Suspensión</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-tren"></table>
-      <div class="resultado-seccion" id="res-tren"></div>
-    </div>
-  </div>
-
-  <div class="seccion" id="sec10">
-    <div class="seccion-header"><div class="num">10</div><h2>Interior del Vehículo</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-interior"></table>
-      <div class="resultado-seccion" id="res-interior"></div>
-    </div>
-  </div>
-
-  <div class="seccion" id="sec11">
-    <div class="seccion-header"><div class="num">11</div><h2>Prueba de Ruta</h2></div>
-    <div class="seccion-body">
-      <table class="items-table" id="tabla-ruta"></table>
-      <div class="resultado-seccion" id="res-ruta"></div>
-    </div>
-  </div>
-
-  <!-- ───────────── SECCIÓN 12: Accesorios + Observaciones ───────────── -->
-  <div class="seccion" id="sec12">
-    <div class="seccion-header"><div class="num">12</div><h2>Accesorios y Observaciones del Perito</h2></div>
-    <div class="seccion-body">
-      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:10px">Accesorios (uno por línea)</p>
-      <textarea id="accesorios" rows="4" style="width:100%;border:1.5px solid var(--borde);border-radius:8px;padding:10px;font-family:inherit;font-size:.9rem;outline:none" placeholder="Radio&#10;Parlantes&#10;Timón deportivo"></textarea>
-      <div style="height:20px"></div>
-      <p style="font-size:.8rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:10px">Observaciones del Perito</p>
-      <div class="obs-list" id="obs-list"></div>
-      <button class="btn-add" onclick="addObs()">+ Agregar observación</button>
-      <div style="height:20px"></div>
-      <div class="campo col-full">
-        <label>Calificación Final Total (%)</label>
-        <input type="number" id="calificacion_total" min="0" max="100" value="100"
-               style="font-size:1.5rem;font-weight:700;color:var(--azul);text-align:center;max-width:120px">
-      </div>
-
-      <!-- ── Adjuntar PDF de Antecedentes ── -->
-      <div style="height:24px"></div>
-      <div style="border:2px dashed var(--azul);border-radius:12px;padding:20px;background:var(--azul-light)">
-        <p style="font-size:.8rem;font-weight:700;color:var(--azul);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:1.1rem">📎</span> Adjuntar Informe de Antecedentes (PDF)
-        </p>
-        <p style="font-size:.78rem;color:var(--texto-suave);margin-bottom:14px">
-          Opcional — Al adjuntar un PDF de antecedentes, se fusionará automáticamente al final del informe generado para obtener un documento completo.
-        </p>
-        <label id="lbl-upload" style="display:inline-flex;align-items:center;gap:8px;background:var(--azul);color:white;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:background .2s">
-          <span>📂</span> Seleccionar archivo PDF
-          <input type="file" id="pdf_antecedentes" accept="application/pdf" style="display:none" onchange="onPdfChange(this)">
-        </label>
-        <div id="pdf-preview" style="display:none;margin-top:14px;background:white;border:1.5px solid var(--borde);border-radius:8px;padding:12px 16px;display:none;align-items:center;gap:12px">
-          <span style="font-size:1.5rem">📄</span>
-          <div style="flex:1">
-            <p id="pdf-nombre" style="font-size:.88rem;font-weight:600;color:var(--texto);margin:0"></p>
-            <p id="pdf-tamano" style="font-size:.75rem;color:var(--texto-suave);margin:0"></p>
-          </div>
-          <button onclick="quitarPdf()" style="background:none;border:none;color:var(--rojo);cursor:pointer;font-size:1.1rem;padding:4px" title="Quitar archivo">✕</button>
-        </div>
-        <p id="pdf-aviso" style="display:none;margin-top:10px;font-size:.78rem;color:var(--rojo);font-weight:600"></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ───────────── Botones de navegación ───────────── -->
-  <div class="nav-btns">
-    <button class="btn btn-secondary" id="btnPrev" onclick="navStep(-1)" style="display:none">← Anterior</button>
-    <button class="btn btn-primary" id="btnNext" onclick="navStep(1)">Siguiente →</button>
-    <button class="btn btn-success" id="btnGenerar" onclick="generarPDF()" style="display:none">
-      📄 Generar Informe PDF
-    </button>
-  </div>
-
+<div class="progress-bar-wrap">
+  <div class="progress-steps" id="progressSteps"></div>
 </div>
 
-<div class="toast" id="toast">✓ Generando PDF…</div>
+<!-- SEC 1: Datos -->
+<div class="seccion visible" id="sec1">
+  <div class="seccion-header"><div class="num">1</div><h2>Datos del Vehículo</h2></div>
+  <div class="seccion-body">
+    <div class="grid-4">
+      <div class="campo"><label>No. Servicio</label><input type="text" id="no_servicio" value="001"></div>
+      <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
+      <div class="campo"><label>Placa</label><input type="text" id="placa" style="text-transform:uppercase"></div>
+      <div class="campo"><label>Tipo de Peritaje</label><select id="tipo_peritaje"><option>Completo</option><option>Básico</option></select></div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid-4">
+      <div class="campo"><label>Clase</label><input type="text" id="clase" value="Automóvil"></div>
+      <div class="campo"><label>Marca</label><input type="text" id="marca"></div>
+      <div class="campo"><label>Línea</label><input type="text" id="linea"></div>
+      <div class="campo"><label>Carrocería</label><input type="text" id="carroceria" value="Hatch Back"></div>
+      <div class="campo"><label>Modelo</label><input type="number" id="modelo" placeholder="2023"></div>
+      <div class="campo"><label>Color</label><input type="text" id="color"></div>
+      <div class="campo"><label>Nacionalidad</label><input type="text" id="nacionalidad" value="Colombia"></div>
+      <div class="campo"><label>Tipo de Caja</label><select id="tipo_caja"><option>Mecánica</option><option>Automática</option><option>CVT</option></select></div>
+      <div class="campo"><label>Cilindraje (cc)</label><input type="number" id="cilindraje"></div>
+      <div class="campo"><label>Combustible</label><select id="combustible"><option>Gasolina</option><option>Diesel</option><option>Eléctrico</option><option>Gas</option></select></div>
+      <div class="campo"><label>Pintura</label><select id="pintura"><option>Plana</option><option>Metálica</option><option>Perlada</option></select></div>
+      <div class="campo"><label>Servicio</label><select id="servicio"><option>Particular</option><option>Público</option><option>Oficial</option></select></div>
+      <div class="campo"><label>Kilometraje</label><input type="number" id="kilometraje"></div>
+      <div class="campo"><label>No. Chasis</label><input type="text" id="no_chasis"></div>
+      <div class="campo"><label>No. Serial</label><input type="text" id="no_serial"></div>
+      <div class="campo"><label>No. Motor</label><input type="text" id="no_motor"></div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid-3">
+      <div class="campo"><label>Propietario</label><input type="text" id="propietario"></div>
+      <div class="campo"><label>Documento / NIT</label><input type="text" id="documento"></div>
+      <div class="campo"><label>Dueños anteriores</label><input type="number" id="duenos_anteriores" value="0"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 2+3 -->
+<div class="seccion" id="sec2">
+  <div class="seccion-header"><div class="num">2-3</div><h2>Documentación y Valores</h2></div>
+  <div class="seccion-body">
+    <div class="grid-3">
+      <div class="campo"><label>Aseguradora</label><input type="text" id="aseguradora"></div>
+      <div class="campo"><label>Reporta Siniestros</label><select id="reporta_siniestros"><option value="0">No</option><option value="1">Sí</option></select></div>
+      <div class="campo"><label>Cuántos siniestros</label><input type="number" id="cuantos_siniestros" value="0"></div>
+      <div class="campo"><label>Valor reclamaciones ($)</label><input type="text" id="valor_reclamaciones" placeholder="0"></div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="grid-3">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="tarjeta_propiedad" checked> Tarjeta de propiedad</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="soat" checked> SOAT vigente</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="rev_tecnomecanica" checked> Rev. Tecnomecánica</label>
+    </div>
+    <div style="height:16px"></div>
+    <p style="font-size:.78rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:10px">Valores Comerciales</p>
+    <div class="grid-3">
+      <div class="campo"><label>Revista Motor ($)</label><input type="text" id="val_revista_motor" placeholder="0"></div>
+      <div class="campo"><label>Fasecolda ($)</label><input type="text" id="val_fasecolda" placeholder="0"></div>
+      <div class="campo"><label>Mercado ($)</label><input type="text" id="val_mercado" placeholder="0"></div>
+      <div class="campo"><label>Accesorios ($)</label><input type="text" id="val_accesorios" placeholder="0"></div>
+      <div class="campo"><label>Depreciación ($)</label><input type="text" id="val_depreciacion" placeholder="0"></div>
+      <div class="campo"><label>Valor Elperito ($)</label><input type="text" id="val_elperito" placeholder="0"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 4: ESQUEMAS VISUALES -->
+<div class="seccion" id="sec4">
+  <div class="seccion-header"><div class="num">4</div><h2>Inspección Visual — Carrocería y Estructura</h2></div>
+  <div class="seccion-body">
+
+    <!-- Leyenda criterios -->
+    <div style="background:var(--gris);border:1px solid var(--borde);border-radius:9px;padding:10px 14px;margin-bottom:14px">
+      <div style="font-size:.72rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:7px">Criterios de evaluación — toca cada pieza para registrar</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#5C7A1A;padding:2px 8px;border-radius:5px">Bueno</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#3498db;padding:2px 8px;border-radius:5px">Repintado</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#1abc9c;padding:2px 8px;border-radius:5px">Buena Reparación</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#e67e22;padding:2px 8px;border-radius:5px">Mala Reparación ⚠</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#2980b9;padding:2px 8px;border-radius:5px">Buena Sustitución</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#c0392b;padding:2px 8px;border-radius:5px">Mala Sustitución ⚠</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#f39c12;padding:2px 8px;border-radius:5px">Regular ⚠</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#7d6608;padding:2px 8px;border-radius:5px">Sumido</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#d35400;padding:2px 8px;border-radius:5px">Deformación Media ⚠</span>
+        <span style="font-size:.62rem;font-weight:700;color:white;background:#922b21;padding:2px 8px;border-radius:5px">Deformación Fuerte ⚠</span>
+      </div>
+      <div style="font-size:.65rem;color:var(--rojo);margin-top:5px">⚠ = Concepto desfavorable</div>
+    </div>
+
+    <!-- CARROCERÍA -->
+    <div class="esquema-wrap" id="wrap-carroceria"></div>
+    <div class="resultado-seccion" id="res-carroceria"><span class="res-pct">100%</span><div style="flex:1"><div style="margin-bottom:5px">✅ Carrocería: <b>Sin afectaciones</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:100%"></div></div></div></div>
+
+    <div style="height:12px"></div>
+
+    <!-- ESTRUCTURA INTERIOR -->
+    <div class="aviso-estructural">⚠️ <span>Piezas de <b>estructura interior y superior</b> — cualquier deformación media o fuerte genera <b>concepto desfavorable</b> automático</span></div>
+    <div class="esquema-wrap" id="wrap-int"></div>
+    <div class="resultado-seccion" id="res-int"><span class="res-pct">100%</span><div style="flex:1"><div style="margin-bottom:5px">✅ Estructura Interior: <b>Sin afectación</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:100%"></div></div></div></div>
+
+    <div style="height:12px"></div>
+
+    <!-- ESTRUCTURA SUPERIOR -->
+    <div class="esquema-wrap" id="wrap-sup"></div>
+    <div class="resultado-seccion" id="res-sup"><span class="res-pct">100%</span><div style="flex:1"><div style="margin-bottom:5px">✅ Estructura Superior: <b>Sin afectación</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:100%"></div></div></div></div>
+
+    <div style="height:14px"></div>
+
+    <!-- Compresión + Llantas -->
+    <p style="font-size:.76rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:7px">Compresión Motor (PSI)</p>
+    <div class="grid-4" style="gap:7px">
+      <div class="campo"><label>Cil 1</label><input type="number" id="cil1" placeholder="122"></div>
+      <div class="campo"><label>Cil 2</label><input type="number" id="cil2" placeholder="122"></div>
+      <div class="campo"><label>Cil 3</label><input type="number" id="cil3" placeholder="122"></div>
+      <div class="campo"><label>Cil 4</label><input type="number" id="cil4" placeholder="122"></div>
+      <div class="campo"><label>Cil 5</label><input type="number" id="cil5"></div>
+      <div class="campo"><label>Cil 6</label><input type="number" id="cil6"></div>
+      <div class="campo"><label>Cil 7</label><input type="number" id="cil7"></div>
+      <div class="campo"><label>Cil 8</label><input type="number" id="cil8"></div>
+    </div>
+    <div style="height:14px"></div>
+    <p style="font-size:.76rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:7px">Llantas y Amortiguadores</p>
+    <div class="grid-4">
+      <div class="campo"><label>Vida útil delantera (%)</label><input type="number" id="llanta_del_vida" value="0" min="0" max="100"></div>
+      <div class="campo"><label>Presión delantera (PSI)</label><input type="number" id="llanta_del_psi" value="38"></div>
+      <div class="campo"><label>Vida útil trasera (%)</label><input type="number" id="llanta_tra_vida" value="0" min="0" max="100"></div>
+      <div class="campo"><label>Presión trasera (PSI)</label><input type="number" id="llanta_tra_psi" value="38"></div>
+    </div>
+    <div class="grid-3" style="margin-top:9px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="llantas_cambio"> Llantas requieren cambio</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="susp_del_cambio"> Suspensión delantera cambio</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="susp_tra_cambio"> Suspensión trasera cambio</label>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 5-11 -->
+<div class="seccion" id="sec5"><div class="seccion-header"><div class="num">5</div><h2>Motor</h2></div><div class="seccion-body"><table class="items-table" id="tabla-motor"></table><div class="resultado-seccion" id="res-motor"></div></div></div>
+<div class="seccion" id="sec6"><div class="seccion-header"><div class="num">6</div><h2>Sistema Eléctrico</h2></div><div class="seccion-body"><table class="items-table" id="tabla-electrico"></table><div class="resultado-seccion" id="res-electrico"></div></div></div>
+<div class="seccion" id="sec7"><div class="seccion-header"><div class="num">7</div><h2>Fuga de Fluidos</h2></div><div class="seccion-body"><table class="items-table" id="tabla-fluidos"></table><div class="resultado-seccion" id="res-fluidos"></div></div></div>
+<div class="seccion" id="sec8"><div class="seccion-header"><div class="num">8</div><h2>Llantas</h2></div><div class="seccion-body"><table class="items-table" id="tabla-llantas"></table><div class="resultado-seccion" id="res-llantas"></div></div></div>
+<div class="seccion" id="sec9"><div class="seccion-header"><div class="num">9</div><h2>Tren Delantero y Suspensión</h2></div><div class="seccion-body"><table class="items-table" id="tabla-tren"></table><div class="resultado-seccion" id="res-tren"></div></div></div>
+<div class="seccion" id="sec10"><div class="seccion-header"><div class="num">10</div><h2>Interior del Vehículo</h2></div><div class="seccion-body"><table class="items-table" id="tabla-interior"></table><div class="resultado-seccion" id="res-interior"></div></div></div>
+<div class="seccion" id="sec11"><div class="seccion-header"><div class="num">11</div><h2>Prueba de Ruta</h2></div><div class="seccion-body"><table class="items-table" id="tabla-ruta"></table><div class="resultado-seccion" id="res-ruta"></div></div></div>
+
+<!-- SEC 12 -->
+<div class="seccion" id="sec12">
+  <div class="seccion-header"><div class="num">12</div><h2>Accesorios, Observaciones y Concepto Final</h2></div>
+  <div class="seccion-body">
+    <p style="font-size:.76rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:7px">Accesorios (uno por línea)</p>
+    <textarea id="accesorios" rows="3" style="width:100%;border:1.5px solid var(--borde);border-radius:8px;padding:9px;font-family:inherit;font-size:.87rem;outline:none" placeholder="Radio&#10;Parlantes&#10;Timón deportivo"></textarea>
+    <div style="height:16px"></div>
+    <p style="font-size:.76rem;font-weight:700;color:var(--texto-suave);text-transform:uppercase;margin-bottom:7px">Observaciones del Perito</p>
+    <div class="obs-list" id="obs-list"></div>
+    <button class="btn-add" onclick="addObs()">+ Agregar observación</button>
+    <div style="height:18px"></div>
+    <div style="border:2px dashed var(--azul);border-radius:12px;padding:14px;background:var(--azul-light)">
+      <p style="font-size:.76rem;font-weight:700;color:var(--azul);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:7px">📎 Adjuntar Informe de Antecedentes (PDF)</p>
+      <p style="font-size:.73rem;color:var(--texto-suave);margin-bottom:11px">Opcional — se fusionará al final del informe.</p>
+      <label style="display:inline-flex;align-items:center;gap:8px;background:var(--azul);color:white;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600">
+        📂 Seleccionar PDF
+        <input type="file" id="pdf_antecedentes" accept="application/pdf" style="display:none" onchange="onPdfChange(this)">
+      </label>
+      <div id="pdf-preview" style="display:none;margin-top:10px;background:white;border:1.5px solid var(--borde);border-radius:8px;padding:9px 13px;align-items:center;gap:10px">
+        <span>📄</span>
+        <div style="flex:1"><p id="pdf-nombre" style="font-size:.83rem;font-weight:600;margin:0"></p><p id="pdf-tamano" style="font-size:.7rem;color:var(--texto-suave);margin:0"></p></div>
+        <button onclick="quitarPdf()" style="background:none;border:none;color:var(--rojo);cursor:pointer">✕</button>
+      </div>
+      <p id="pdf-aviso" style="display:none;margin-top:7px;font-size:.73rem;color:var(--rojo);font-weight:600"></p>
+    </div>
+
+    <div class="aprobacion-panel">
+      <h3>🔖 Concepto Final del Perito</h3>
+      <p class="ap-sub">El perito puede ajustar el concepto según su criterio técnico. Si hay deformación en pieza estructural, el sistema marca NO APROBADO automáticamente.</p>
+      <div class="aprobacion-btns">
+        <button class="btn-aprob aprobado active" id="btn-aprob-si" onclick="setAprobacion('aprobado')">✅ APROBADO</button>
+        <button class="btn-aprob no-aprobado" id="btn-aprob-no" onclick="setAprobacion('no_aprobado')">❌ NO APROBADO</button>
+      </div>
+      <p class="aprob-nota" id="aprob-nota">Basado en la calificación calculada</p>
+    </div>
+  </div>
+</div>
+
+<div class="nav-btns">
+  <button class="btn btn-secondary" id="btnPrev" onclick="navStep(-1)" style="display:none">← Anterior</button>
+  <button class="btn btn-primary" id="btnNext" onclick="navStep(1)">Siguiente →</button>
+  <button class="btn btn-success" id="btnGenerar" onclick="generarPDF()" style="display:none">📄 Generar Informe PDF</button>
+</div>
+
+</div><!-- /container -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL CRITERIO -->
+<div class="part-modal-overlay" id="part-modal" onclick="if(event.target===this)closePartModal()">
+  <div class="part-modal">
+    <div class="part-modal-head">
+      <span class="part-modal-titulo" id="pmodal-title">Pieza</span>
+      <button class="part-modal-close" onclick="closePartModal()">✕</button>
+    </div>
+    <div class="part-modal-sub" id="pmodal-sub"></div>
+    <div class="criterios-grid" id="criterios-grid"></div>
+  </div>
+</div>
 
 <script>
-// ─── Definición de secciones y pasos ─────────────────────────────────────
 const SERVICIO_ID = {{ servicio_id }};
 
 const STEPS = [
-  { id: 'sec1', label: 'Datos\nVehículo' },
-  { id: 'sec2', label: 'Docs &\nValores' },
-  { id: 'sec4', label: 'Inspección\nVisual' },
-  { id: 'sec5', label: 'Motor' },
-  { id: 'sec6', label: 'Eléctrico' },
-  { id: 'sec7', label: 'Fluidos' },
-  { id: 'sec8', label: 'Llantas' },
-  { id: 'sec9', label: 'Tren' },
-  { id: 'sec10', label: 'Interior' },
-  { id: 'sec11', label: 'Ruta' },
-  { id: 'sec12', label: 'Accesorios\n& Obs.' },
+  {id:'sec1',label:'Datos'},{id:'sec2',label:'Docs/Vals'},
+  {id:'sec4',label:'Visual'},{id:'sec5',label:'Motor'},
+  {id:'sec6',label:'Eléctrico'},{id:'sec7',label:'Fluidos'},
+  {id:'sec8',label:'Llantas'},{id:'sec9',label:'Tren'},
+  {id:'sec10',label:'Interior'},{id:'sec11',label:'Ruta'},
+  {id:'sec12',label:'Final'},
 ];
-
 let currentStep = 0;
 
-// ─── Definición de ítems por sección ────────────────────────────────────
+// ─── Criterios universales ────────────────────────────────────────────────────
+const CRITERIOS = {
+  'OK':  {label:'Bueno',              nota:'',                              score:100, color:'#5C7A1A', desfav:false, critico:false},
+  'REP': {label:'Repintado',          nota:'',                              score:90,  color:'#3498db', desfav:false, critico:false},
+  'BR':  {label:'Buena Reparación',   nota:'',                              score:85,  color:'#1abc9c', desfav:false, critico:false},
+  'BS':  {label:'Buena Sustitución',  nota:'',                              score:90,  color:'#2980b9', desfav:false, critico:false},
+  'SUM': {label:'Sumido',             nota:'',                              score:65,  color:'#7d6608', desfav:false, critico:false},
+  'REG': {label:'Regular',            nota:'Concepto desfavorable',         score:50,  color:'#f39c12', desfav:true,  critico:false},
+  'MR':  {label:'Mala Reparación',    nota:'Concepto desfavorable',         score:25,  color:'#e67e22', desfav:true,  critico:false},
+  'MS':  {label:'Mala Sustitución',   nota:'Concepto desfavorable',         score:20,  color:'#c0392b', desfav:true,  critico:false},
+  'DM':  {label:'Deformación Media',  nota:'Concepto desfavorable estructural', score:15, color:'#d35400', desfav:true, critico:true},
+  'DF':  {label:'Deformación Fuerte', nota:'Concepto desfavorable estructural', score:0,  color:'#922b21', desfav:true, critico:true},
+};
+
+// Piezas estructurales (donde deformación aplica con mayor impacto)
+const PIEZAS_ESTRUCTURALES = new Set([
+  'cuna_motor','larguero_capota_izq','larguero_capota_der',
+  'punta_del_izq','punta_del_der','punta_tra_izq','punta_tra_der',
+  'paral_central_izq','paral_central_der','paral_parasol','puente_suspension',
+]);
+
+// ─── Definición esquemas ───────────────────────────────────────────────────────
+const ESQUEMA_CARR = {
+  titulo: '🚗 CARROCERÍA',
+  cols: ['◀ IZQUIERDO', 'CENTRO', 'DERECHO ▶'],
+  filas: [
+    [{key:'farola_izq',label:'Farola Izq.'}, {key:'bumper_del',label:'Bumper Del.'}, {key:'farola_der',label:'Farola Der.'}],
+    [{key:'gdf_izq',label:'Guardafango Izq.'}, {key:'capo',label:'Capot'}, {key:'gdf_der',label:'Guardafango Der.'}],
+    [{key:'puerta_di',label:'Puerta Del. Izq.'}, {key:'parabrisas_del',label:'Parabrisas Del.'}, {key:'puerta_dd',label:'Puerta Del. Der.'}],
+    [{key:'puerta_ti',label:'Puerta Tra. Izq.'}, {key:'techo',label:'Techo'}, {key:'puerta_td',label:'Puerta Tra. Der.'}],
+    [{key:'costado_izq',label:'Costado Izq.'}, {key:'parabrisas_tra',label:'Parabrisas Tra.'}, {key:'costado_der',label:'Costado Der.'}],
+    [{key:'estribo_izq',label:'Estribo Izq.'}, {key:'baul',label:'Baúl / Tapa'}, {key:'estribo_der',label:'Estribo Der.'}],
+  ]
+};
+
+const ESQUEMA_INT = {
+  titulo: '⚙️ ESTRUCTURA INTERIOR',
+  cols: ['◀ IZQUIERDO', 'CENTRO', 'DERECHO ▶'],
+  filas: [
+    [{key:'punta_del_izq',label:'Punta Chasis Del. Izq.',estr:true}, {key:'cuna_motor',label:'Cuna de Motor',estr:true}, {key:'punta_del_der',label:'Punta Chasis Del. Der.',estr:true}],
+    [{key:'refuerzo_piso_izq',label:'Refuerzo Piso Izq.'}, {key:'torpado',label:'Torpado'}, {key:'refuerzo_piso_der',label:'Refuerzo Piso Der.'}],
+    [{key:'punta_tra_izq',label:'Punta Chasis Tra. Izq.',estr:true}, {key:'panel_trasero',label:'Panel Trasero'}, {key:'punta_tra_der',label:'Punta Chasis Tra. Der.',estr:true}],
+  ]
+};
+
+const ESQUEMA_SUP = {
+  titulo: '🏗️ ESTRUCTURA SUPERIOR',
+  cols: ['◀ IZQUIERDO', 'CENTRO', 'DERECHO ▶'],
+  filas: [
+    [{key:'panel_puerta_izq',label:'Panel Puerta Izq.'}, {key:'frontal_superior',label:'Frontal Superior'}, {key:'panel_puerta_der',label:'Panel Puerta Der.'}],
+    [{key:'paral_central_izq',label:'Paral Central Izq.',estr:true}, {key:'paral_parasol',label:'Paral Parasol',estr:true}, {key:'paral_central_der',label:'Paral Central Der.',estr:true}],
+    [{key:'larguero_capota_izq',label:'Larguero Capota Izq.',estr:true}, {key:'puente_suspension',label:'Puente de Suspensión',estr:true}, {key:'larguero_capota_der',label:'Larguero Capota Der.',estr:true}],
+  ]
+};
+
+// Estado de partes
+const statePartes = {}; // key -> criterio code ('OK', 'REP', etc.)
+function initState(esquema) { esquema.filas.forEach(f=>f.forEach(p=>{ if(!statePartes[p.key]) statePartes[p.key]='OK'; })); }
+initState(ESQUEMA_CARR); initState(ESQUEMA_INT); initState(ESQUEMA_SUP);
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+let modalKey = null;
+let modalEsEstructural = false;
+
+function openPartModal(key, label, esEstr) {
+  modalKey = key;
+  modalEsEstructural = esEstr;
+  document.getElementById('pmodal-title').textContent = label;
+  document.getElementById('pmodal-sub').textContent = esEstr ? '⚠️ Pieza estructural — deformación genera concepto desfavorable' : '';
+  const current = statePartes[key] || 'OK';
+
+  // Build criteria buttons
+  const grid = document.getElementById('criterios-grid');
+  const orden = ['OK','REP','BR','BS','SUM','---','REG','MR','MS',esEstr?'DM':'','DF'].filter(Boolean);
+  let html = '';
+  let sepShown = false;
+  orden.forEach(code => {
+    if (code === '---') { html += '<div class="criterios-sep"></div><div class="criterios-sep-label">⚠️ CRITERIOS DESFAVORABLES</div>'; sepShown=true; return; }
+    if (!CRITERIOS[code]) return;
+    const c = CRITERIOS[code];
+    const sel = code === current ? 'selected' : '';
+    html += `<button class="criterio-btn ${sel}" style="background:${c.color}" onclick="selectCriterio('${code}')">
+      ${c.label}
+      ${c.nota?`<span class="c-nota">${c.nota}</span>`:''}
+    </button>`;
+  });
+  grid.innerHTML = html;
+  document.getElementById('part-modal').classList.add('open');
+}
+function closePartModal() { document.getElementById('part-modal').classList.remove('open'); }
+function selectCriterio(code) {
+  if (!modalKey) return;
+  statePartes[modalKey] = code;
+  renderAllEsquemas();
+  actualizarResCarr();
+  actualizarResInt();
+  actualizarResSuper();
+  checkDesfavorable();
+  closePartModal();
+}
+
+// ─── Calcular puntajes por esquema ────────────────────────────────────────────
+function calcEsquema(esquema) {
+  let total = 0, n = 0;
+  esquema.filas.forEach(f=>f.forEach(p=>{
+    const c = statePartes[p.key]||'OK';
+    const sc = CRITERIOS[c].score;
+    // Piezas estructurales con DM/DF tienen penalización extra en la sección de estructura
+    let efectivo = sc;
+    if (p.estr && CRITERIOS[c].critico) efectivo = 0;
+    total += efectivo; n++;
+  }));
+  return n ? Math.round(total/n) : 100;
+}
+
+function actualizarResCarr() {
+  const pct = calcEsquema(ESQUEMA_CARR);
+  const el = document.getElementById('res-carroceria');
+  if (!el) return;
+  const c = pct>=90?'var(--verde)':pct>=70?'var(--naranja)':'var(--rojo)';
+  const e = pct>=90?'✅':pct>=70?'⚠️':'❌';
+  const d = pct>=90?'Sin afectaciones':pct>=70?'Afectación moderada':'Afectación considerable';
+  el.style.background = c;
+  el.innerHTML = `<span class="res-pct">${pct}%</span><div style="flex:1"><div style="margin-bottom:5px">${e} Carrocería: <b>${d}</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:${pct}%"></div></div></div>`;
+}
+function actualizarResInt() {
+  const pct = calcEsquema(ESQUEMA_INT);
+  const el = document.getElementById('res-int');
+  if (!el) return;
+  const c = pct>=90?'var(--verde)':pct>=70?'var(--naranja)':'var(--rojo)';
+  const e = pct>=90?'✅':pct>=70?'⚠️':'❌';
+  const d = pct>=90?'Sin afectación':pct>=70?'Afectación moderada':'⚠️ Afectación estructural';
+  el.style.background = c;
+  el.innerHTML = `<span class="res-pct">${pct}%</span><div style="flex:1"><div style="margin-bottom:5px">${e} Interior: <b>${d}</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:${pct}%"></div></div></div>`;
+}
+function actualizarResSuper() {
+  const pct = calcEsquema(ESQUEMA_SUP);
+  const el = document.getElementById('res-sup');
+  if (!el) return;
+  const c = pct>=90?'var(--verde)':pct>=70?'var(--naranja)':'var(--rojo)';
+  const e = pct>=90?'✅':pct>=70?'⚠️':'❌';
+  const d = pct>=90?'Sin afectación':pct>=70?'Afectación moderada':'⚠️ Afectación estructural';
+  el.style.background = c;
+  el.innerHTML = `<span class="res-pct">${pct}%</span><div style="flex:1"><div style="margin-bottom:5px">${e} Superior: <b>${d}</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:${pct}%"></div></div></div>`;
+}
+
+// ─── Auto NO APROBADO si hay deformación estructural ─────────────────────────
+function checkDesfavorable() {
+  const tieneDeformEstr = Object.entries(statePartes).some(([k,v]) => PIEZAS_ESTRUCTURALES.has(k) && CRITERIOS[v].critico);
+  if (tieneDeformEstr && aprobacionManual === 'auto') {
+    setAprobacion('no_aprobado', true);
+  }
+}
+
+// ─── Render esquemas ──────────────────────────────────────────────────────────
+function renderEsquema(esquema, wrapId) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  let html = `<div class="esquema-titulo">${esquema.titulo}</div>
+  <div class="esquema-col-headers">
+    <div class="esquema-col-h">${esquema.cols[0]}</div>
+    <div class="esquema-col-h">${esquema.cols[1]}</div>
+    <div class="esquema-col-h">${esquema.cols[2]}</div>
+  </div>
+  <div class="esquema-grid">`;
+  esquema.filas.forEach((fila, fi) => {
+    if (fi > 0) html += '<hr class="esquema-separador">';
+    fila.forEach(p => {
+      const st = statePartes[p.key] || 'OK';
+      const crit = CRITERIOS[st];
+      const esEstr = p.estr || false;
+      html += `<div class="parte-btn border-c-${st}" onclick="openPartModal('${p.key}','${p.label}',${esEstr})">
+        ${esEstr?'<div class="parte-critico">⚠</div>':''}
+        <div class="pnombre">${p.label}</div>
+        <div class="parte-badge c-${st}">${crit.label}</div>
+      </div>`;
+    });
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+function renderAllEsquemas() {
+  renderEsquema(ESQUEMA_CARR, 'wrap-carroceria');
+  renderEsquema(ESQUEMA_INT, 'wrap-int');
+  renderEsquema(ESQUEMA_SUP, 'wrap-sup');
+}
+
+// ─── Ítems mecánicos B/R/M ────────────────────────────────────────────────────
 const ITEMS_DEF = {
-  motor: [
-    ['Arranque','arranque'], ['Radiador','radiador'], ['Carter motor','carter_motor'],
-    ['Carter de caja','carter_caja'], ['Caja de velocidades','caja_vel'],
-    ['Soporte de caja','soporte_caja'], ['Soporte de motor','soporte_motor'],
-    ['Ruido de motor','ruido_motor'], ['Ventiladores','ventiladores'],
-    ['Mangueras','mangueras'], ['Condición embrague','embrague'],
-    ['Sincronización','sincronizacion'], ['Correa repartición','correa_rep'],
-    ['Correa accesorios','correa_acc'], ['Polea y tensores','polea_tensores'],
-  ],
-  electrico: [
-    ['Panorámico delantero','panoramico_del'], ['Panorámico trasero','panoramico_tra'],
-    ['Vidrios','vidrios'], ['Plumillas','plumillas'],
-    ['Farola derecha','farola_der'], ['Farola izquierda','farola_izq'],
-    ['Exploradora derecha','explor_der'], ['Exploradora izquierda','explor_izq'],
-    ['Stop derecho','stop_der'], ['Stop izquierdo','stop_izq'],
-    ['Bocina','bocina'], ['Batería','bateria'],
-    ['Fusibles','fusibles'], ['Alternador','alternador'], ['Luz porta placa','luz_placa'],
-  ],
-  fluidos: [
-    ['Fuga aceite motor','aceite_motor'], ['Fuga aceite caja','aceite_caja'],
-    ['Fuga refrigerante','refrigerante'], ['Fuga líquido freno','liq_freno'],
-    ['Fuga dirección hidráulica','dir_hidraulica'], ['Fuga diferencial','diferencial'],
-  ],
-  llantas: [
-    ['Llantas delanteras','del'], ['Llantas traseras','tra'],
-    ['Llanta de repuesto','repuesto'], ['Desgaste','desgaste'], ['Estado rines','rines'],
-  ],
-  tren: [
-    ['Pastillas de freno','pastillas'], ['Discos de freno','discos'],
-    ['Amortiguadores del.','amort_del'], ['Amortiguadores tra.','amort_tra'],
-    ['Puntas de ejes','puntas'], ['Axiales','axiales'],
-    ['Terminales','terminales'], ['Rótulas','rotulas'],
-    ['Bujes','bujes'], ['Tijeras','tijeras'],
-    ['Caja de dirección','caja_dir'], ['Rodamientos','rodamientos'],
-  ],
-  interior: [
-    ['Calefacción','calefaccion'], ['Aire acondicionado','aire_ac'],
-    ['Cinturones','cinturones'], ['Asiento derecho','asiento_der'],
-    ['Asiento izquierdo','asiento_izq'], ['Asientos traseros','asientos_tra'],
-    ['Condición del techo','techo'], ['Manija techo','manija_techo'],
-    ['Luz de techo','luz_techo'], ['Carteras','carteras'],
-    ['Millare','millare'], ['Alfombras','alfombras'],
-    ['Cabeceros','cabeceros'], ['Tapetes','tapetes'],
-  ],
-  ruta: [
-    ['Aceleración','aceleracion'], ['Maniobrabilidad','maniobrabilidad'],
-    ['Ángulo de alineación','alineacion'], ['Condición de frenado','frenado'],
-    ['Condición del embrague','embrague'], ['Relación caja-motor','relacion_caja'],
-    ['Vibraciones','vibraciones'],
-  ],
+  motor:[['Arranque','arranque'],['Radiador','radiador'],['Carter motor','carter_motor'],['Carter de caja','carter_caja'],['Caja de velocidades','caja_vel'],['Soporte de caja','soporte_caja'],['Soporte de motor','soporte_motor'],['Ruido de motor','ruido_motor'],['Ventiladores','ventiladores'],['Mangueras','mangueras'],['Condición embrague','embrague'],['Sincronización','sincronizacion'],['Correa repartición','correa_rep'],['Correa accesorios','correa_acc'],['Polea y tensores','polea_tensores']],
+  electrico:[['Panorámico delantero','panoramico_del'],['Panorámico trasero','panoramico_tra'],['Vidrios','vidrios'],['Plumillas','plumillas'],['Farola derecha','farola_der'],['Farola izquierda','farola_izq'],['Exploradora derecha','explor_der'],['Exploradora izquierda','explor_izq'],['Stop derecho','stop_der'],['Stop izquierdo','stop_izq'],['Bocina','bocina'],['Batería','bateria'],['Fusibles','fusibles'],['Alternador','alternador'],['Luz porta placa','luz_placa']],
+  fluidos:[['Fuga aceite motor','aceite_motor'],['Fuga aceite caja','aceite_caja'],['Fuga refrigerante','refrigerante'],['Fuga líquido freno','liq_freno'],['Fuga dirección hidráulica','dir_hidraulica'],['Fuga diferencial','diferencial']],
+  llantas:[['Llantas delanteras','del'],['Llantas traseras','tra'],['Llanta de repuesto','repuesto'],['Desgaste','desgaste'],['Estado rines','rines']],
+  tren:[['Pastillas de freno','pastillas'],['Discos de freno','discos'],['Amortiguadores del.','amort_del'],['Amortiguadores tra.','amort_tra'],['Puntas de ejes','puntas'],['Axiales','axiales'],['Terminales','terminales'],['Rótulas','rotulas'],['Bujes','bujes'],['Tijeras','tijeras'],['Caja de dirección','caja_dir'],['Rodamientos','rodamientos']],
+  interior:[['Calefacción','calefaccion'],['Aire acondicionado','aire_ac'],['Cinturones','cinturones'],['Asiento derecho','asiento_der'],['Asiento izquierdo','asiento_izq'],['Asientos traseros','asientos_tra'],['Condición del techo','techo'],['Manija techo','manija_techo'],['Luz de techo','luz_techo'],['Carteras','carteras'],['Millare','millare'],['Alfombras','alfombras'],['Cabeceros','cabeceros'],['Tapetes','tapetes']],
+  ruta:[['Aceleración','aceleracion'],['Maniobrabilidad','maniobrabilidad'],['Ángulo de alineación','alineacion'],['Condición de frenado','frenado'],['Condición del embrague','embrague'],['Relación caja-motor','relacion_caja'],['Vibraciones','vibraciones']],
 };
-
-// ─── Init ──────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  // Fecha de hoy
-  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-
-  // Pre-llenar datos desde la bitácora
-  const placaInput = document.getElementById('placa');
-  if (placaInput && !placaInput.value) placaInput.value = '{{ placa }}';
-  const propietarioInput = document.getElementById('propietario');
-  if (propietarioInput && !propietarioInput.value) propietarioInput.value = '{{ cliente }}';
-
-  // Construir barra de progreso
-  const ps = document.getElementById('progressSteps');
-  STEPS.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'step' + (i === 0 ? ' active' : '');
-    div.innerHTML = `<div class="step-dot">${i+1}</div><div class="step-label">${s.label}</div>`;
-    div.onclick = () => goToStep(i);
-    ps.appendChild(div);
-  });
-
-  // Construir tablas de ítems
-  Object.entries(ITEMS_DEF).forEach(([secKey, items]) => {
-    buildItemsTable(secKey, items);
-  });
-
-  updateNav();
-  addDano();
-  addObs();
-});
-
-// ─── Tablas de ítems ──────────────────────────────────────────────────
-const PESOS_SECCION = {
-  motor: 20, electrico: 10, fluidos: 10, llantas: 10,
-  tren: 20, interior: 10, ruta: 20,
-};
-const VALOR_ESTADO = { B: 100, R: 50, M: 0 };
+const PESOS = {carroceria:12,chasis_int:12,chasis_sup:11,motor:13,electrico:7,fluidos:6,llantas:6,tren:13,interior:6,ruta:10, otro:4};
+const VALOR_ESTADO = {B:100,R:50,M:0};
 
 function calcularSeccion(secKey) {
-  const items = ITEMS_DEF[secKey];
-  if (!items) return 100;
-  const vals = items.map(([, key]) => {
-    const sel = document.querySelector(`[name="${secKey}_${key}"]:checked`);
-    return sel ? sel.value : 'B';
-  }).filter(v => v !== 'NA').map(v => VALOR_ESTADO[v] ?? 100);
-  return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 100;
+  const items = ITEMS_DEF[secKey]; if (!items) return 100;
+  const vals = items.map(([,k])=>{ const s=document.querySelector(`[name="${secKey}_${k}"]:checked`); return s?s.value:'B'; }).filter(v=>v!=='NA').map(v=>VALOR_ESTADO[v]??100);
+  return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 100;
 }
 
 function calcularTotal() {
-  let sumaPond = 0, sumaPesos = 0;
-  Object.entries(PESOS_SECCION).forEach(([sec, peso]) => {
-    sumaPond += calcularSeccion(sec) * peso;
-    sumaPesos += peso;
-  });
-  return sumaPesos ? Math.round(sumaPond / sumaPesos) : 100;
+  const pCarr = calcEsquema(ESQUEMA_CARR);
+  const pInt = calcEsquema(ESQUEMA_INT);
+  const pSup = calcEsquema(ESQUEMA_SUP);
+  const secs = {carroceria:pCarr,chasis_int:pInt,chasis_sup:pSup,motor:calcularSeccion('motor'),electrico:calcularSeccion('electrico'),fluidos:calcularSeccion('fluidos'),llantas:calcularSeccion('llantas'),tren:calcularSeccion('tren'),interior:calcularSeccion('interior'),ruta:calcularSeccion('ruta')};
+  let sp=0,sw=0;
+  Object.entries(secs).forEach(([k,v])=>{ const p=PESOS[k]||0; sp+=v*p; sw+=p; });
+  return sw ? Math.round(sp/sw) : 100;
 }
 
 function actualizarResultadoSeccion(secKey) {
   const pct = calcularSeccion(secKey);
-  const el = document.getElementById(`res-${secKey}`);
-  if (!el) return;
-  const color = pct >= 90 ? 'var(--verde)' : pct >= 70 ? 'var(--naranja)' : 'var(--rojo)';
-  const emoji = pct >= 90 ? '✅' : pct >= 70 ? '⚠️' : '❌';
-  const desc = pct >= 90 ? 'Bueno' : pct >= 70 ? 'Regular' : 'Malo';
-  el.style.background = color;
-  el.innerHTML = `
-    <span class="res-pct">${pct}%</span>
-    <div style="flex:1">
-      <div style="margin-bottom:6px">${emoji} Resultado sección: <b>${desc}</b></div>
-      <div class="res-barra-wrap"><div class="res-barra-fill" style="width:${pct}%"></div></div>
-    </div>
-  `;
-  // Actualizar total
-  const total = calcularTotal();
-  const elTotal = document.getElementById('calificacion_total');
-  if (elTotal) elTotal.value = total;
+  const el = document.getElementById(`res-${secKey}`); if(!el) return;
+  const c=pct>=90?'var(--verde)':pct>=70?'var(--naranja)':'var(--rojo)';
+  const e=pct>=90?'✅':pct>=70?'⚠️':'❌';
+  const d=pct>=90?'Bueno':pct>=70?'Regular':'Malo';
+  el.style.background=c;
+  el.innerHTML=`<span class="res-pct">${pct}%</span><div style="flex:1"><div style="margin-bottom:5px">${e} Resultado: <b>${d}</b></div><div class="res-barra-wrap"><div class="res-barra-fill" style="width:${pct}%"></div></div></div>`;
 }
 
 function buildItemsTable(secKey, items) {
-  const table = document.getElementById(`tabla-${secKey}`);
-  if (!table) return;
-  const n = items.length;
-  const pesoItem = n ? (100 / n).toFixed(1) : 0;
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th style="width:200px">Ítem</th>
-        <th class="center" style="width:50px;font-size:.7rem;color:#888">Peso</th>
-        <th class="center" style="width:70px">Bueno</th>
-        <th class="center" style="width:70px">Regular</th>
-        <th class="center" style="width:70px">Malo</th>
-        <th class="center" style="width:70px">N/A</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${items.map(([label, key]) => `
-        <tr>
-          <td>${label}</td>
-          <td style="text-align:center;font-size:.72rem;color:#aaa">${pesoItem}%</td>
-          <td><div class="radio-group">
-            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_B" value="B" checked>
-            <label class="b" for="${secKey}_${key}_B" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">B</label>
-          </div></td>
-          <td><div class="radio-group">
-            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_R" value="R">
-            <label class="r" for="${secKey}_${key}_R" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">R</label>
-          </div></td>
-          <td><div class="radio-group">
-            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_M" value="M">
-            <label class="m" for="${secKey}_${key}_M" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">M</label>
-          </div></td>
-          <td><div class="radio-group">
-            <input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_NA" value="NA">
-            <label class="na" for="${secKey}_${key}_NA" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">NA</label>
-          </div></td>
-        </tr>
-      `).join('')}
-    </tbody>
-  `;
-  items.forEach(([, key]) => {
-    document.getElementById(`${secKey}_${key}_B`).checked = true;
-    updateAllLabels(`${secKey}_${key}`);
-  });
+  const table = document.getElementById(`tabla-${secKey}`); if(!table) return;
+  const n=items.length; const pw=n?(100/n).toFixed(1):0;
+  table.innerHTML = `<thead><tr><th style="width:200px">Ítem</th><th class="center" style="width:46px;font-size:.66rem;color:#aaa">Peso</th><th class="center" style="width:60px">Bueno</th><th class="center" style="width:60px">Regular</th><th class="center" style="width:60px">Malo</th><th class="center" style="width:60px">N/A</th></tr></thead><tbody>${items.map(([label,key])=>`<tr><td>${label}</td><td style="text-align:center;font-size:.68rem;color:#ccc">${pw}%</td>
+  <td><div class="radio-group"><input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_B" value="B" checked><label class="b" for="${secKey}_${key}_B" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">B</label></div></td>
+  <td><div class="radio-group"><input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_R" value="R"><label class="r" for="${secKey}_${key}_R" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">R</label></div></td>
+  <td><div class="radio-group"><input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_M" value="M"><label class="m" for="${secKey}_${key}_M" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">M</label></div></td>
+  <td><div class="radio-group"><input type="radio" name="${secKey}_${key}" id="${secKey}_${key}_NA" value="NA"><label class="na" for="${secKey}_${key}_NA" onclick="updateLabel(this);actualizarResultadoSeccion('${secKey}')">NA</label></div></td>
+  </tr>`).join('')}</tbody>`;
+  items.forEach(([,k])=>{ document.getElementById(`${secKey}_${k}_B`).checked=true; updateAllLabels(`${secKey}_${k}`); });
   actualizarResultadoSeccion(secKey);
 }
 
-function updateLabel(label) {
-  const name = label.previousElementSibling.name;
-  document.querySelectorAll(`[name="${name}"]`).forEach(r => {
-    const l = r.nextElementSibling;
-    l.classList.toggle('checked', r.checked);
-  });
-}
+function updateLabel(label) { const name=label.previousElementSibling.name; document.querySelectorAll(`[name="${name}"]`).forEach(r=>{ const l=r.nextElementSibling; l.classList.toggle('checked',r.checked); }); }
+function updateAllLabels(name) { document.querySelectorAll(`[name="${name}"]`).forEach(r=>{ const l=r.nextElementSibling; if(l) l.classList.toggle('checked',r.checked); }); }
 
-function updateAllLabels(name) {
-  document.querySelectorAll(`[name="${name}"]`).forEach(r => {
-    const l = r.nextElementSibling;
-    if (l) l.classList.toggle('checked', r.checked);
-  });
-}
-
-// ─── Daños carrocería ─────────────────────────────────────────────────
-let danoCount = 0;
-function addDano() {
-  const list = document.getElementById('danos-list');
-  const id = danoCount++;
-  const div = document.createElement('div');
-  div.className = 'dano-item';
-  div.id = `dano-${id}`;
-  div.innerHTML = `
-    <input type="text" placeholder="Pieza (ej: Guardafango izq.)" id="dano_pieza_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
-    <select id="dano_estado_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
-      <option value="Bueno">Bueno</option>
-      <option value="Regular">Regular</option>
-      <option value="Malo" selected>Malo</option>
-    </select>
-    <input type="text" placeholder="Descripción del daño" id="dano_desc_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
-    <button class="btn-remove" onclick="document.getElementById('dano-${id}').remove()">✕</button>
-  `;
-  list.appendChild(div);
-}
-
-// ─── Observaciones ────────────────────────────────────────────────────
-let obsCount = 0;
+// ─── Obs ──────────────────────────────────────────────────────────────────────
+let obsCount=0;
 function addObs() {
-  const list = document.getElementById('obs-list');
-  const id = obsCount++;
-  const div = document.createElement('div');
-  div.className = 'obs-item';
-  div.id = `obs-${id}`;
-  div.innerHTML = `
-    <select id="obs_nivel_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit">
-      <option value="AVISO">AVISO</option>
-      <option value="PENDIENTE">PENDIENTE</option>
-      <option value="INMEDIATO">INMEDIATO</option>
-    </select>
-    <input type="text" placeholder="Descripción de la observación" id="obs_desc_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:6px 8px;font-family:inherit;width:100%">
-    <button class="btn-remove" onclick="document.getElementById('obs-${id}').remove()">✕</button>
-  `;
+  const list=document.getElementById('obs-list'); const id=obsCount++;
+  const div=document.createElement('div'); div.className='obs-item'; div.id=`obs-${id}`;
+  div.innerHTML=`<select id="obs_nivel_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:5px 8px;font-family:inherit"><option value="AVISO">AVISO</option><option value="PENDIENTE">PENDIENTE</option><option value="INMEDIATO">INMEDIATO</option></select>
+  <input type="text" placeholder="Descripción de la observación" id="obs_desc_${id}" style="border:1.5px solid var(--borde);border-radius:6px;padding:5px 8px;font-family:inherit;width:100%">
+  <button class="btn-remove" onclick="document.getElementById('obs-${id}').remove()">✕</button>`;
   list.appendChild(div);
 }
 
-// ─── Navegación ───────────────────────────────────────────────────────
-function navStep(dir) {
-  goToStep(currentStep + dir);
+// ─── Aprobación ──────────────────────────────────────────────────────────────
+let aprobacionManual='auto';
+function setAprobacion(val, isAuto=false) {
+  if (!isAuto) aprobacionManual=val;
+  updateAprobUI(val);
+}
+function updateAprobUI(forzar) {
+  const val=forzar||(aprobacionManual!=='auto'?aprobacionManual:(calcularTotal()>=58?'aprobado':'no_aprobado'));
+  const si=document.getElementById('btn-aprob-si'); const no=document.getElementById('btn-aprob-no');
+  if(!si) return;
+  si.classList.toggle('active', val==='aprobado');
+  no.classList.toggle('active', val==='no_aprobado');
+  const nota=document.getElementById('aprob-nota');
+  if(aprobacionManual==='auto') nota.textContent=val==='aprobado'?'✅ Basado en calificación (≥58%)':'⚠️ Calificación <58% o deformación estructural detectada';
+  else nota.textContent='✏️ Concepto ajustado manualmente por el perito';
+}
+function getAprobacionFinal() {
+  if (aprobacionManual!=='auto') return aprobacionManual;
+  const tieneDeformEstr=Object.entries(statePartes).some(([k,v])=>PIEZAS_ESTRUCTURALES.has(k)&&CRITERIOS[v].critico);
+  if (tieneDeformEstr) return 'no_aprobado';
+  return calcularTotal()>=58?'aprobado':'no_aprobado';
 }
 
+// ─── Navegación ──────────────────────────────────────────────────────────────
+function navStep(dir) { goToStep(currentStep+dir); }
 function goToStep(idx) {
-  if (idx < 0 || idx >= STEPS.length) return;
-
-  // Ocultar actual
+  if(idx<0||idx>=STEPS.length) return;
   document.getElementById(STEPS[currentStep].id).classList.remove('visible');
-
-  // Marcar como completado
-  const dots = document.querySelectorAll('.step');
+  const dots=document.querySelectorAll('.step');
   dots[currentStep].classList.remove('active');
-  if (idx > currentStep) dots[currentStep].classList.add('done');
-
-  currentStep = idx;
+  if(idx>currentStep) dots[currentStep].classList.add('done');
+  currentStep=idx;
   document.getElementById(STEPS[currentStep].id).classList.add('visible');
-  dots[currentStep].classList.add('active');
-  dots[currentStep].classList.remove('done');
-
-  document.querySelector('.container').scrollTo(0, 0);
-  window.scrollTo(0, 0);
-  updateNav();
-
-  // Reportar progreso a la bitácora
-  if (SERVICIO_ID) {
-    fetch(`/api/servicios/${SERVICIO_ID}/progreso`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({paso: currentStep})
-    }).catch(() => {});
-  }
+  dots[currentStep].classList.add('active'); dots[currentStep].classList.remove('done');
+  window.scrollTo(0,0); updateNav();
+  if(SERVICIO_ID) fetch(`/api/servicios/${SERVICIO_ID}/progreso`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paso:currentStep})}).catch(()=>{});
 }
-
 function updateNav() {
-  document.getElementById('btnPrev').style.display = currentStep > 0 ? 'flex' : 'none';
-  const isLast = currentStep === STEPS.length - 1;
-  document.getElementById('btnNext').style.display = isLast ? 'none' : 'flex';
-  document.getElementById('btnGenerar').style.display = isLast ? 'flex' : 'none';
+  document.getElementById('btnPrev').style.display=currentStep>0?'flex':'none';
+  const isLast=currentStep===STEPS.length-1;
+  document.getElementById('btnNext').style.display=isLast?'none':'flex';
+  document.getElementById('btnGenerar').style.display=isLast?'flex':'none';
 }
 
-// ─── Recopilar datos y enviar ─────────────────────────────────────────
+// ─── Recopilar datos ──────────────────────────────────────────────────────────
 function recopilarDatos() {
-  const d = {};
-
-  // Básicos
-  ['no_servicio','fecha','placa','tipo_peritaje','clase','marca','linea','carroceria',
-   'modelo','color','nacionalidad','tipo_caja','cilindraje','combustible','pintura',
-   'servicio','kilometraje','no_chasis','no_serial','no_motor','propietario',
-   'documento','duenos_anteriores','aseguradora','cuantos_siniestros','valor_reclamaciones',
-   'val_revista_motor','val_fasecolda','val_mercado','val_accesorios','val_depreciacion',
-   'val_elperito','pct_carroceria','pct_chasis',
-   'llanta_del_vida','llanta_del_psi','llanta_tra_vida','llanta_tra_psi',
-  ].forEach(k => {
-    const el = document.getElementById(k);
-    if (el) d[k] = el.value;
-  });
-
-  // Puntajes calculados automáticamente
-  ['motor','electrico','fluidos','llantas','tren','interior','ruta'].forEach(sec => {
-    d[`pct_${sec}`] = calcularSeccion(sec);
-  });
-  d['calificacion_total'] = calcularTotal();
-
-  // Checkboxes
-  ['tarjeta_propiedad','soat','rev_tecnomecanica','llantas_cambio','susp_del_cambio','susp_tra_cambio']
-    .forEach(k => { const el = document.getElementById(k); if (el) d[k] = el.checked; });
-
-  d.reporta_siniestros = document.getElementById('reporta_siniestros').value === '1';
-
-  // Compresión motor
-  d.compresion_motor = {};
-  for (let i = 1; i <= 8; i++) {
-    const el = document.getElementById(`cil${i}`);
-    if (el && el.value) d.compresion_motor[`cil${i}`] = el.value;
-  }
-
-  // Ítems B/R/M/NA
-  Object.entries(ITEMS_DEF).forEach(([secKey, items]) => {
-    items.forEach(([, key]) => {
-      const sel = document.querySelector(`[name="${secKey}_${key}"]:checked`);
-      if (sel) d[`${secKey}_${key}`] = sel.value;
-    });
-  });
-
-  // Daños carrocería
-  d.danos_carroceria = [];
-  document.querySelectorAll('[id^="dano_pieza_"]').forEach(el => {
-    const id = el.id.split('_').pop();
-    const pieza = el.value.trim();
-    const estado = document.getElementById(`dano_estado_${id}`)?.value || '';
-    const desc = document.getElementById(`dano_desc_${id}`)?.value.trim() || '';
-    if (pieza) d.danos_carroceria.push({ pieza, estado, descripcion: desc });
-  });
-
-  // Observaciones
-  d.observaciones = [];
-  document.querySelectorAll('[id^="obs_nivel_"]').forEach(el => {
-    const id = el.id.split('_').pop();
-    const nivel = el.value;
-    const desc = document.getElementById(`obs_desc_${id}`)?.value.trim() || '';
-    if (desc) d.observaciones.push({ nivel, descripcion: desc });
-  });
-
-  // Accesorios
-  d.accesorios = document.getElementById('accesorios').value
-    .split('\n').map(s => s.trim()).filter(Boolean);
-
+  const d={};
+  ['no_servicio','fecha','placa','tipo_peritaje','clase','marca','linea','carroceria','modelo','color','nacionalidad','tipo_caja','cilindraje','combustible','pintura','servicio','kilometraje','no_chasis','no_serial','no_motor','propietario','documento','duenos_anteriores','aseguradora','cuantos_siniestros','valor_reclamaciones','val_revista_motor','val_fasecolda','val_mercado','val_accesorios','val_depreciacion','val_elperito','llanta_del_vida','llanta_del_psi','llanta_tra_vida','llanta_tra_psi']
+    .forEach(k=>{ const el=document.getElementById(k); if(el) d[k]=el.value; });
+  ['tarjeta_propiedad','soat','rev_tecnomecanica','llantas_cambio','susp_del_cambio','susp_tra_cambio'].forEach(k=>{ const el=document.getElementById(k); if(el) d[k]=el.checked; });
+  d.reporta_siniestros=document.getElementById('reporta_siniestros').value==='1';
+  d.compresion_motor={};
+  for(let i=1;i<=8;i++){const el=document.getElementById(`cil${i}`);if(el&&el.value)d.compresion_motor[`cil${i}`]=el.value;}
+  Object.entries(ITEMS_DEF).forEach(([secKey,items])=>{ items.forEach(([,key])=>{ const sel=document.querySelector(`[name="${secKey}_${key}"]:checked`); if(sel) d[`${secKey}_${key}`]=sel.value; }); });
+  // Partes con criterios
+  d.partes_carroceria={}; ESQUEMA_CARR.filas.forEach(f=>f.forEach(p=>d.partes_carroceria[p.key]=statePartes[p.key]||'OK'));
+  d.partes_int={}; ESQUEMA_INT.filas.forEach(f=>f.forEach(p=>d.partes_int[p.key]=statePartes[p.key]||'OK'));
+  d.partes_sup={}; ESQUEMA_SUP.filas.forEach(f=>f.forEach(p=>d.partes_sup[p.key]=statePartes[p.key]||'OK'));
+  d.pct_carroceria=calcEsquema(ESQUEMA_CARR);
+  d.pct_chasis_int=calcEsquema(ESQUEMA_INT);
+  d.pct_chasis_sup=calcEsquema(ESQUEMA_SUP);
+  ['motor','electrico','fluidos','llantas','tren','interior','ruta'].forEach(s=>d[`pct_${s}`]=calcularSeccion(s));
+  d.calificacion_total=calcularTotal();
+  d.aprobacion=getAprobacionFinal();
+  d.observaciones=[];
+  document.querySelectorAll('[id^="obs_nivel_"]').forEach(el=>{const id=el.id.split('_').pop();const desc=document.getElementById(`obs_desc_${id}`)?.value.trim()||'';if(desc)d.observaciones.push({nivel:el.value,descripcion:desc});});
+  d.accesorios=document.getElementById('accesorios').value.split('\n').map(s=>s.trim()).filter(Boolean);
   return d;
 }
 
-// ─── Adjunto PDF antecedentes ─────────────────────────────────────────
+// ─── PDF adjunto ──────────────────────────────────────────────────────────────
 function onPdfChange(input) {
-  const aviso = document.getElementById('pdf-aviso');
-  const preview = document.getElementById('pdf-preview');
-  aviso.style.display = 'none';
-  if (!input.files || !input.files[0]) { preview.style.display = 'none'; return; }
-  const file = input.files[0];
-  if (file.type !== 'application/pdf') {
-    aviso.textContent = '⚠️ Solo se aceptan archivos PDF.';
-    aviso.style.display = 'block';
-    input.value = '';
-    preview.style.display = 'none';
-    return;
-  }
-  if (file.size > 20 * 1024 * 1024) {
-    aviso.textContent = '⚠️ El archivo supera los 20 MB permitidos.';
-    aviso.style.display = 'block';
-    input.value = '';
-    preview.style.display = 'none';
-    return;
-  }
-  document.getElementById('pdf-nombre').textContent = file.name;
-  document.getElementById('pdf-tamano').textContent = `${(file.size / 1024).toFixed(1)} KB`;
-  preview.style.display = 'flex';
+  const aviso=document.getElementById('pdf-aviso');const preview=document.getElementById('pdf-preview');aviso.style.display='none';
+  if(!input.files||!input.files[0]){preview.style.display='none';return;}
+  const file=input.files[0];
+  if(file.type!=='application/pdf'){aviso.textContent='⚠️ Solo se aceptan PDFs.';aviso.style.display='block';input.value='';preview.style.display='none';return;}
+  document.getElementById('pdf-nombre').textContent=file.name;
+  document.getElementById('pdf-tamano').textContent=`${(file.size/1024).toFixed(1)} KB`;
+  preview.style.display='flex';
 }
+function quitarPdf(){document.getElementById('pdf_antecedentes').value='';document.getElementById('pdf-preview').style.display='none';}
 
-function quitarPdf() {
-  const input = document.getElementById('pdf_antecedentes');
-  input.value = '';
-  document.getElementById('pdf-preview').style.display = 'none';
-  document.getElementById('pdf-aviso').style.display = 'none';
-}
-
+// ─── Generar PDF ──────────────────────────────────────────────────────────────
 async function generarPDF() {
-  const datos = recopilarDatos();
-  const toast = document.getElementById('toast');
-  toast.textContent = '✓ Generando PDF…';
-  toast.style.background = '';
-  toast.classList.add('show');
-
+  const datos=recopilarDatos();
+  const toast=document.getElementById('toast');toast.textContent='✓ Generando PDF…';toast.style.background='';toast.classList.add('show');
   try {
-    const formData = new FormData();
-    formData.append('datos', JSON.stringify(datos));
-    if (SERVICIO_ID) formData.append('servicio_id', SERVICIO_ID);
-    const adjunto = document.getElementById('pdf_antecedentes');
-    if (adjunto && adjunto.files && adjunto.files[0]) {
-      formData.append('pdf_antecedentes', adjunto.files[0]);
-      toast.textContent = '⏳ Fusionando documentos…';
-    }
-
-    const res = await fetch('/generar_pdf', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error('Error del servidor');
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `peritaje_${datos.placa || 'vehiculo'}.pdf`;
-    a.click();
-    URL.revokeObjectURL(url);
-
-    toast.textContent = '✓ Informe generado exitosamente';
-
-    // Mostrar botón volver a bitácora
-    setTimeout(() => {
-      toast.classList.remove('show');
-      if (SERVICIO_ID) mostrarPanelFinal();
-    }, 2500);
-
-  } catch (e) {
-    toast.textContent = '✗ Error al generar PDF';
-    toast.style.background = '#e74c3c';
-    console.error(e);
-    setTimeout(() => { toast.classList.remove('show'); toast.style.background = ''; }, 3500);
-  }
+    const fd=new FormData();fd.append('datos',JSON.stringify(datos));
+    if(SERVICIO_ID) fd.append('servicio_id',SERVICIO_ID);
+    const adj=document.getElementById('pdf_antecedentes');
+    if(adj?.files?.[0]){fd.append('pdf_antecedentes',adj.files[0]);toast.textContent='⏳ Fusionando…';}
+    const res=await fetch('/generar_pdf',{method:'POST',body:fd});
+    if(!res.ok) throw new Error();
+    const blob=await res.blob();const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=`peritaje_${datos.placa||'v'}.pdf`;a.click();URL.revokeObjectURL(url);
+    toast.textContent='✓ Informe generado';
+    setTimeout(()=>{toast.classList.remove('show');mostrarFinal();},2000);
+  } catch(e){toast.textContent='✗ Error al generar PDF';toast.style.background='#e74c3c';setTimeout(()=>{toast.classList.remove('show');toast.style.background='';},3000);}
+}
+function mostrarFinal(){
+  if(document.getElementById('panel-exito')) return;
+  const nav=document.querySelector('.nav-btns');const div=document.createElement('div');div.id='panel-exito';
+  div.style.cssText='background:linear-gradient(135deg,#27ae60,#2ecc71);color:white;border-radius:13px;padding:20px 22px;margin-bottom:14px;text-align:center';
+  div.innerHTML=`<div style="font-size:1.8rem;margin-bottom:6px">✅</div><div style="font-size:1rem;font-weight:700;margin-bottom:4px">Informe generado correctamente</div><div style="font-size:.8rem;opacity:.85;margin-bottom:14px">El PDF fue descargado y el servicio quedó registrado</div><a href="/bitacora" style="display:inline-block;background:white;color:#27ae60;font-weight:700;padding:9px 20px;border-radius:8px;text-decoration:none;font-size:.85rem">← Volver a la Bitácora</a>`;
+  nav.parentNode.insertBefore(div,nav);div.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-function mostrarPanelFinal() {
-  // Insertar panel de éxito encima de los botones
-  const nav = document.querySelector('.nav-btns');
-  if (document.getElementById('panel-exito')) return;
-  const div = document.createElement('div');
-  div.id = 'panel-exito';
-  div.style.cssText = 'background:linear-gradient(135deg,#27ae60,#2ecc71);color:white;border-radius:14px;padding:24px 28px;margin-bottom:16px;text-align:center;box-shadow:0 4px 20px rgba(39,174,96,.35)';
-  div.innerHTML = `
-    <div style="font-size:2rem;margin-bottom:8px">✅</div>
-    <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px">Informe generado correctamente</div>
-    <div style="font-size:.85rem;opacity:.85;margin-bottom:18px">El PDF fue descargado y el servicio quedó registrado</div>
-    <a href="/bitacora" style="display:inline-block;background:white;color:#27ae60;font-weight:700;padding:10px 24px;border-radius:9px;text-decoration:none;font-size:.9rem;box-shadow:0 2px 10px rgba(0,0,0,.12)">
-      ← Volver a la Bitácora
-    </a>
-  `;
-  nav.parentNode.insertBefore(div, nav);
-  div.scrollIntoView({behavior: 'smooth', block: 'center'});
-}
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('fecha').value=new Date().toISOString().split('T')[0];
+  const pl=document.getElementById('placa');if(pl&&!pl.value) pl.value='{{ placa }}';
+  const pr=document.getElementById('propietario');if(pr&&!pr.value) pr.value='{{ cliente }}';
+  const ps=document.getElementById('progressSteps');
+  STEPS.forEach((s,i)=>{ const div=document.createElement('div');div.className='step'+(i===0?' active':'');div.innerHTML=`<div class="step-dot">${i+1}</div><div class="step-label">${s.label}</div>`;div.onclick=()=>goToStep(i);ps.appendChild(div); });
+  Object.entries(ITEMS_DEF).forEach(([secKey,items])=>buildItemsTable(secKey,items));
+  renderAllEsquemas();
+  addObs();updateNav();updateAprobUI();
+});
 </script>
 </body>
 </html>

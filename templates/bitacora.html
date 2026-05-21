@@ -7,10 +7,10 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --azul: #1a73c7; --azul-dark: #0d5fa8; --azul-light: #e8f1fb;
+      --azul: #5C7A1A; --azul-dark: #3D5112; --azul-light: #EEF4E0;
       --verde: #27ae60; --rojo: #e74c3c; --naranja: #e67e22; --morado: #8e44ad;
       --gris: #f7f8fa; --borde: #dde3ec; --texto: #1c2433; --texto-suave: #6b7a8d;
-      --sombra: 0 2px 14px rgba(26,115,199,.10);
+      --sombra: 0 2px 14px rgba(92,122,26,.10);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: #f0f4f9; color: var(--texto); min-height: 100vh; }
@@ -19,7 +19,7 @@
     header {
       background: var(--azul); color: white; padding: 0 28px;
       display: flex; align-items: center; gap: 18px; height: 58px;
-      box-shadow: 0 2px 16px rgba(26,115,199,.4); position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 16px rgba(92,122,26,.4); position: sticky; top: 0; z-index: 100;
     }
     .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
     .logo span { color: #7ec8ff; }
@@ -89,7 +89,7 @@
       border: 1.5px solid var(--borde); overflow: hidden;
       transition: box-shadow .2s, transform .15s;
     }
-    .svc-card:hover { box-shadow: 0 6px 28px rgba(26,115,199,.18); transform: translateY(-2px); }
+    .svc-card:hover { box-shadow: 0 6px 28px rgba(92,122,26,.18); transform: translateY(-2px); }
     .svc-card.completado { border-color: var(--verde); }
 
     .card-top {
@@ -98,7 +98,7 @@
     .placa-box {
       background: var(--azul); color: white; border-radius: 8px;
       padding: 6px 14px; text-align: center; min-width: 80px;
-      box-shadow: 0 2px 8px rgba(26,115,199,.3);
+      box-shadow: 0 2px 8px rgba(92,122,26,.3);
     }
     .placa-box .placa-lbl { font-size: .58rem; font-weight: 600; opacity: .8; letter-spacing: .5px; }
     .placa-box .placa-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
@@ -134,7 +134,7 @@
     .dot.done { background: var(--verde); border-color: var(--verde); color: white; }
     .dot.current { background: var(--azul); border-color: var(--azul); color: white; animation: pulse 1.5s infinite; }
     .dot.pending { background: white; border-color: var(--borde); color: var(--texto-suave); }
-    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(26,115,199,.4);} 50%{box-shadow:0 0 0 6px rgba(26,115,199,0);} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(92,122,26,.4);} 50%{box-shadow:0 0 0 6px rgba(92,122,26,0);} }
 
     .completado-badge {
       display: inline-flex; align-items: center; gap: 6px;
@@ -203,12 +203,12 @@
       background: var(--gris); outline: none; transition: border-color .2s, box-shadow .2s;
     }
     .campo input:focus, .campo select:focus {
-      border-color: var(--azul); box-shadow: 0 0 0 3px rgba(26,115,199,.12); background: white;
+      border-color: var(--azul); box-shadow: 0 0 0 3px rgba(92,122,26,.12); background: white;
     }
     .btn-crear {
       width: 100%; background: var(--azul); color: white; border: none;
       border-radius: 9px; padding: 12px; font-size: .95rem; font-weight: 600;
-      font-family: inherit; cursor: pointer; box-shadow: 0 3px 12px rgba(26,115,199,.3);
+      font-family: inherit; cursor: pointer; box-shadow: 0 3px 12px rgba(92,122,26,.3);
       transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 7px;
     }
     .btn-crear:hover { background: var(--azul-dark); transform: translateY(-1px); }
@@ -303,6 +303,7 @@
   <div class="logo">Perit<span>Go</span></div>
   <div class="header-user">
     <div class="user-badge">👤 {{ usuario }}</div>
+    <button onclick="openModal('modal-clave')" class="btn-logout" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">🔑 Cambiar clave</button>
     <a href="/logout" class="btn-logout">Salir →</a>
   </div>
 </header>
@@ -338,7 +339,7 @@
     </div>
     <div class="cards-grid" id="cards-container">
       <div class="empty-state">
-        <div class="spinner" style="width:28px;height:28px;border-color:rgba(26,115,199,.3);border-top-color:var(--azul);margin:0 auto 12px"></div>
+        <div class="spinner" style="width:28px;height:28px;border-color:rgba(92,122,26,.3);border-top-color:var(--azul);margin:0 auto 12px"></div>
         Cargando servicios…
       </div>
     </div>
@@ -719,5 +720,61 @@ setInterval(() => {
   }
 }, 6000);
 </script>
+<!-- Modal: Cambiar Clave -->
+<div class="modal-overlay" id="modal-clave" onclick="if(event.target===this) closeModal('modal-clave')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🔑 Cambiar Contraseña</h3>
+      <button class="modal-close" onclick="closeModal('modal-clave')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="campo">
+        <label>Contraseña actual</label>
+        <input type="password" id="clave-actual" placeholder="••••••••">
+      </div>
+      <div class="campo">
+        <label>Nueva contraseña (mín. 6 caracteres)</label>
+        <input type="password" id="clave-nueva" placeholder="••••••••">
+      </div>
+      <div class="campo">
+        <label>Confirmar nueva contraseña</label>
+        <input type="password" id="clave-confirmar" placeholder="••••••••">
+      </div>
+      <div id="clave-error" style="display:none;color:#e74c3c;font-size:.82rem;margin-bottom:10px"></div>
+      <button class="btn-crear" id="btn-clave-ok" onclick="cambiarClave()">Actualizar contraseña</button>
+    </div>
+  </div>
+</div>
+
+<script>
+async function cambiarClave() {
+  const actual = document.getElementById('clave-actual').value;
+  const nueva = document.getElementById('clave-nueva').value;
+  const confirmar = document.getElementById('clave-confirmar').value;
+  const errEl = document.getElementById('clave-error');
+  errEl.style.display='none';
+  if (!actual || !nueva) { errEl.textContent='Complete todos los campos'; errEl.style.display='block'; return; }
+  if (nueva !== confirmar) { errEl.textContent='Las contraseñas nuevas no coinciden'; errEl.style.display='block'; return; }
+  if (nueva.length < 6) { errEl.textContent='La nueva clave debe tener al menos 6 caracteres'; errEl.style.display='block'; return; }
+  const btn = document.getElementById('btn-clave-ok');
+  btn.disabled=true; btn.textContent='Actualizando…';
+  try {
+    const res = await fetch('/api/cambiar_clave', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({clave_actual:actual, clave_nueva:nueva})});
+    const data = await res.json();
+    if (data.ok) {
+      closeModal('modal-clave');
+      showToast('Contraseña actualizada correctamente');
+      document.getElementById('clave-actual').value='';
+      document.getElementById('clave-nueva').value='';
+      document.getElementById('clave-confirmar').value='';
+    } else {
+      errEl.textContent = data.error || 'Error al cambiar la contraseña';
+      errEl.style.display='block';
+    }
+  } catch(e) { errEl.textContent='Error de conexión'; errEl.style.display='block'; }
+  btn.disabled=false; btn.textContent='Actualizar contraseña';
+}
+</script>
+
 </body>
 </html>
