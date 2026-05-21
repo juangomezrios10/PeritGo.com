@@ -254,8 +254,8 @@ def pdf_completo(sid):
 
 # ─── Colores y estilos PDF ────────────────────────────────────────────────────
 
-AZUL        = colors.HexColor('#1a73c7')
-AZUL_CLARO  = colors.HexColor('#e8f1fb')
+AZUL        = colors.HexColor('#5C7A1A')
+AZUL_CLARO  = colors.HexColor('#EEF4E0')
 GRIS_TABLA  = colors.HexColor('#f5f5f5')
 GRIS_HEADER = colors.HexColor('#4a4a4a')
 VERDE       = colors.HexColor('#27ae60')
@@ -297,8 +297,38 @@ def generar_pdf(datos):
     story = []
     W = 185*mm
 
-    # Cálculo automático de puntajes
-    PESOS = {'motor': 20, 'electrico': 10, 'fluidos': 10, 'llantas': 10, 'tren': 20, 'interior': 10, 'ruta': 20}
+    # ─── Cálculo automático de puntajes — con carrocería y chasis desde partes ───
+    PESOS = {'carroceria':15,'chasis':20,'motor':13,'electrico':7,'fluidos':7,'llantas':7,'tren':13,'interior':6,'ruta':12}
+    CONDICIONES_SCORE = {'B':100,'L':75,'M':50,'G':10,'RB':85,'RM':25}
+    CONDICIONES_LABEL = {'B':'Bueno','L':'Golpe Leve','M':'Golpe Moderado','G':'Golpe Grave','RB':'Reparado Bien','RM':'Reparado Mal'}
+    COND_COLOR = {'B':VERDE,'L':colors.HexColor('#f39c12'),'M':NARANJA,'G':ROJO,'RB':colors.HexColor('#2980b9'),'RM':colors.HexColor('#c0392b')}
+
+    # Carrocería desde partes
+    partes_carr = datos.get('partes_carroceria', {})
+    if partes_carr:
+        vals_c = [CONDICIONES_SCORE.get(v,100) for v in partes_carr.values()]
+        datos['pct_carroceria'] = round(sum(vals_c)/len(vals_c)) if vals_c else 100
+    else:
+        datos.setdefault('pct_carroceria', 100)
+
+    # Chasis ponderado desde partes
+    PARTES_CHAS_PESO = {'punta_del_izq':15,'punta_del_der':15,'larguero_izq':15,'larguero_der':15,
+                        'paral_a_izq':10,'paral_a_der':10,'paral_b_izq':7,'paral_b_der':7,
+                        'traviesa_del':6,'traviesa_tra':6,'panel_trasero':7,'piso':7}
+    PARTES_CHAS_CRITICO = {'punta_del_izq','punta_del_der','larguero_izq','larguero_der','paral_a_izq','paral_a_der'}
+    partes_chas = datos.get('partes_chasis', {})
+    if partes_chas:
+        sp = sw = 0
+        for k, v in partes_chas.items():
+            sc = CONDICIONES_SCORE.get(v, 100)
+            if k in PARTES_CHAS_CRITICO and sc <= 10: sc = 0
+            peso = PARTES_CHAS_PESO.get(k, 7)
+            sp += sc*peso; sw += peso
+        datos['pct_chasis'] = round(sp/sw) if sw else 100
+    else:
+        datos.setdefault('pct_chasis', 100)
+
+    # Secciones mecánicas
     ITEMS_BACK = {
         'motor':    ['arranque','radiador','carter_motor','carter_caja','caja_vel','soporte_caja','soporte_motor','ruido_motor','ventiladores','mangueras','embrague','sincronizacion','correa_rep','correa_acc','polea_tensores'],
         'electrico':['panoramico_del','panoramico_tra','vidrios','plumillas','farola_der','farola_izq','explor_der','explor_izq','stop_der','stop_izq','bocina','bateria','fusibles','alternador','luz_placa'],
@@ -309,13 +339,22 @@ def generar_pdf(datos):
         'ruta':     ['aceleracion','maniobrabilidad','alineacion','frenado','embrague','relacion_caja','vibraciones'],
     }
     VALOR = {'B': 100, 'R': 50, 'M': 0}
-    suma_p = suma_w = 0
     for sec, items in ITEMS_BACK.items():
-        vals = [VALOR.get(datos.get(f'{sec}_{k}', 'B'), 100) for k in items if datos.get(f'{sec}_{k}', 'B') != 'NA']
-        pct = round(sum(vals)/len(vals)) if vals else 100
-        datos[f'pct_{sec}'] = pct
-        suma_p += pct * PESOS[sec]; suma_w += PESOS[sec]
+        vals = [VALOR.get(datos.get(f'{sec}_{k}','B'),100) for k in items if datos.get(f'{sec}_{k}','B') != 'NA']
+        datos[f'pct_{sec}'] = round(sum(vals)/len(vals)) if vals else 100
+
+    suma_p = suma_w = 0
+    for sec, peso in PESOS.items():
+        suma_p += datos.get(f'pct_{sec}', 100) * peso; suma_w += peso
     datos['calificacion_total'] = round(suma_p/suma_w) if suma_w else 100
+
+    # Concepto final
+    aprobacion_raw = datos.get('aprobacion', 'auto')
+    pct_tot_final = datos['calificacion_total']
+    if aprobacion_raw == 'aprobado': aprobacion_final = 'APROBADO'
+    elif aprobacion_raw == 'no_aprobado': aprobacion_final = 'NO APROBADO'
+    else: aprobacion_final = 'APROBADO' if pct_tot_final >= 58 else 'NO APROBADO'
+    es_aprobado = (aprobacion_final == 'APROBADO')
 
     # Encabezado
     fecha = datos.get('fecha', datetime.now().strftime('%d/%m/%Y'))
@@ -397,41 +436,96 @@ def generar_pdf(datos):
     ]], colWidths=[88*mm,9*mm,88*mm]))
     story.append(Spacer(1,3*mm))
 
-    # Sección 4
+    # Sección 4 — Inspección Visual con partes detalladas
     story.append(seccion_header('4. Inspección Visual y Técnica', styles))
-    pct_carr = datos.get('pct_carroceria', 0)
-    pct_chas = datos.get('pct_chasis', 0)
+    pct_carr = datos.get('pct_carroceria', 100)
+    pct_chas = datos.get('pct_chasis', 100)
     pct_tot = datos.get('calificacion_total', 0)
-    story.append(Table([[
-        Paragraph(f'CARROCERÍA  {pct_carr}%', ParagraphStyle('', fontSize=9, fontName='Helvetica-Bold', textColor=AZUL, alignment=TA_CENTER)),
-        Paragraph(f'CHASIS / ESTRUCTURA  {pct_chas}%', ParagraphStyle('', fontSize=9, fontName='Helvetica-Bold', textColor=AZUL, alignment=TA_CENTER)),
-        Paragraph('COMPRESIÓN MOTOR (PSI)', ParagraphStyle('', fontSize=9, fontName='Helvetica-Bold', textColor=AZUL, alignment=TA_CENTER)),
-    ]], colWidths=[62*mm,62*mm,61*mm],
-    style=TableStyle([('BOX',(0,0),(-1,-1),0.5,AZUL),('LINEAFTER',(0,0),(1,-1),0.5,AZUL),('ROWPADDING',(0,0),(-1,-1),4)])))
 
-    danos = datos.get('danos_carroceria', [])
-    danos_rows = []
-    for d in danos[:8]:
-        estado = d.get('estado','')
-        bg = ROJO if estado=='Malo' else (NARANJA if estado=='Regular' else VERDE)
-        danos_rows.append([Paragraph(d.get('pieza',''), styles['normal_sm']),
-                            Paragraph(estado, ParagraphStyle('', fontSize=7.5, fontName='Helvetica-Bold', textColor=BLANCO, backColor=bg)),
-                            Paragraph(d.get('descripcion',''), styles['normal_sm'])])
-    while len(danos_rows) < 8:
-        danos_rows.append(['','',''])
+    carr_color = VERDE if pct_carr>=90 else (NARANJA if pct_carr>=70 else ROJO)
+    chas_color = VERDE if pct_chas>=90 else (NARANJA if pct_chas>=70 else ROJO)
+
+    # Encabezado de puntajes
+    story.append(Table([[
+        Paragraph(f'CARROCERÍA', ParagraphStyle('',fontSize=8,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+        Paragraph(f'CHASIS / ESTRUCTURA', ParagraphStyle('',fontSize=8,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+        Paragraph('COMPRESIÓN MOTOR (PSI)', ParagraphStyle('',fontSize=8,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+    ],[
+        Paragraph(f'<b>{pct_carr}%</b>', ParagraphStyle('',fontSize=18,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+        Paragraph(f'<b>{pct_chas}%</b>', ParagraphStyle('',fontSize=18,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+        Paragraph('', ParagraphStyle('',fontSize=8)),
+    ]], colWidths=[62*mm,62*mm,61*mm],
+    style=TableStyle([
+        ('BACKGROUND',(0,0),(0,-1),carr_color),('BACKGROUND',(1,0),(1,-1),chas_color),
+        ('BACKGROUND',(2,0),(2,-1),AZUL),
+        ('LINEAFTER',(0,0),(1,-1),0.5,BLANCO),
+        ('BOX',(0,0),(-1,-1),0.5,colors.grey),
+        ('ROWPADDING',(0,0),(-1,-1),4),('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ])))
+
+    # Tabla de partes carrocería (solo las afectadas)
+    partes_carr = datos.get('partes_carroceria', {})
+    partes_chas = datos.get('partes_chasis', {})
+    afectadas_carr = [(k, v) for k, v in partes_carr.items() if v != 'B']
+    afectadas_chas = [(k, v) for k, v in partes_chas.items() if v != 'B']
+
+    NOMBRE_PARTE = {
+        'capo':'Capó','bumper_del':'Bumper Del.','gdf_izq':'Guardafango Del. Izq.',
+        'gdf_der':'Guardafango Del. Der.','puerta_di':'Puerta Del. Izq.','puerta_dd':'Puerta Del. Der.',
+        'puerta_ti':'Puerta Tra. Izq.','puerta_td':'Puerta Tra. Der.',
+        'costado_izq':'Costado Izq.','costado_der':'Costado Der.',
+        'estribo_izq':'Estribo Izq.','estribo_der':'Estribo Der.',
+        'techo':'Techo','parabrisas_del':'Parabrisas Del.','parabrisas_tra':'Parabrisas Tra.',
+        'baul':'Baúl / Tapa','bumper_tra':'Bumper Tra.',
+        'punta_del_izq':'Punta Del. Izq.','punta_del_der':'Punta Del. Der.',
+        'larguero_izq':'Larguero Izq.','larguero_der':'Larguero Der.',
+        'paral_a_izq':'Paral A Izq.','paral_a_der':'Paral A Der.',
+        'paral_b_izq':'Paral B Izq.','paral_b_der':'Paral B Der.',
+        'traviesa_del':'Traviesa Del.','traviesa_tra':'Traviesa Tra.',
+        'panel_trasero':'Panel Trasero','piso':'Piso',
+    }
+    PARTES_CHAS_CRITICO = {'punta_del_izq','punta_del_der','larguero_izq','larguero_der','paral_a_izq','paral_a_der'}
+
+    def tabla_partes(afectadas, tipo, estilos):
+        if not afectadas:
+            return Table([[Paragraph(f'✓ {tipo} sin afectaciones registradas',
+                                      ParagraphStyle('',fontSize=7.5,fontName='Helvetica',textColor=VERDE))]],
+                          colWidths=[88*mm], style=TableStyle([('ROWPADDING',(0,0),(-1,-1),3)]))
+        filas = [[Paragraph('Pieza',estilos['celda_label']), Paragraph('Condición',estilos['celda_label'])]]
+        for k, v in afectadas:
+            bg = COND_COLOR.get(v, GRIS_TABLA)
+            critico_txt = ' ⚠️' if k in PARTES_CHAS_CRITICO else ''
+            filas.append([
+                Paragraph(NOMBRE_PARTE.get(k, k) + critico_txt, estilos['normal_sm']),
+                Paragraph(CONDICIONES_LABEL.get(v,'?'),
+                           ParagraphStyle('',fontSize=7,fontName='Helvetica-Bold',textColor=BLANCO,backColor=bg,alignment=TA_CENTER)),
+            ])
+        return Table(filas, colWidths=[55*mm,33*mm],
+                     style=TableStyle([('GRID',(0,0),(-1,-1),0.3,colors.lightgrey),
+                                        ('BACKGROUND',(0,0),(-1,0),AZUL_CLARO),
+                                        ('ROWPADDING',(0,0),(-1,-1),3)]))
 
     cils = datos.get('compresion_motor', {})
     comp_rows = [[Paragraph(f'Cil.{i}',styles['celda_label']),Paragraph(str(cils.get(f'cil{i}','')),styles['celda_valor']),
                    Paragraph(f'Cil.{i+4}',styles['celda_label']),Paragraph(str(cils.get(f'cil{i+4}','')),styles['celda_valor'])] for i in range(1,5)]
 
     story.append(Table([[
-        Table(danos_rows, colWidths=[30*mm,18*mm,14*mm],
-              style=TableStyle([('GRID',(0,0),(-1,-1),0.3,colors.lightgrey),('ROWPADDING',(0,0),(-1,-1),2)])),
-        Table([[Paragraph('(Ver obs. perito)',styles['normal_sm'])]],colWidths=[53*mm]),
-        Table(comp_rows, colWidths=[13*mm,18*mm,13*mm,18*mm],
-              style=TableStyle([('GRID',(0,0),(-1,-1),0.3,colors.lightgrey),('BACKGROUND',(0,0),(0,-1),GRIS_TABLA),
-                                 ('BACKGROUND',(2,0),(2,-1),GRIS_TABLA),('ROWPADDING',(0,0),(-1,-1),3)]))
-    ]], colWidths=[62*mm,53*mm,62*mm], style=TableStyle([('VALIGN',(0,0),(-1,-1),'TOP')])))
+        tabla_partes(afectadas_carr, 'Carrocería', styles),
+        Spacer(5*mm,1),
+        Table([
+            [Paragraph('CHASIS',styles['titulo_seccion'])],
+            [tabla_partes(afectadas_chas, 'Chasis', styles)],
+            [Spacer(1,3*mm)],
+            [Paragraph('COMPRESIÓN MOTOR',styles['titulo_seccion'])],
+            [Table(comp_rows, colWidths=[13*mm,18*mm,13*mm,18*mm],
+                   style=TableStyle([('GRID',(0,0),(-1,-1),0.3,colors.lightgrey),
+                                      ('BACKGROUND',(0,0),(0,-1),GRIS_TABLA),('BACKGROUND',(2,0),(2,-1),GRIS_TABLA),
+                                      ('ROWPADDING',(0,0),(-1,-1),3)]))],
+        ], colWidths=[92*mm],
+        style=TableStyle([('BACKGROUND',(0,0),(-1,0),AZUL),('BACKGROUND',(0,3),(0,3),AZUL),
+                           ('ROWPADDING',(0,0),(-1,-1),2)]))
+    ]], colWidths=[88*mm,5*mm,92*mm], style=TableStyle([('VALIGN',(0,0),(-1,-1),'TOP')])))
 
     story.append(Table([
         [Paragraph('LLANTAS Y AMORTIGUADORES', ParagraphStyle('', fontSize=8, fontName='Helvetica-Bold', textColor=AZUL, alignment=TA_CENTER))],
@@ -517,12 +611,25 @@ def generar_pdf(datos):
     story.append(Table(obs_rows, colWidths=[30*mm,155*mm],
                         style=TableStyle([('BACKGROUND',(0,0),(-1,0),AZUL),('GRID',(0,0),(-1,-1),0.3,colors.lightgrey),('ROWPADDING',(0,0),(-1,-1),3)])))
 
-    # Calificación final
+    # Calificación Final + Concepto
     story.append(Spacer(1,4*mm))
-    story.append(Table([[Paragraph('CALIFICACIÓN FINAL TOTAL:',ParagraphStyle('',fontSize=14,fontName='Helvetica-Bold',textColor=NEGRO,alignment=TA_RIGHT)),
-                          Paragraph(f'<b>{pct_tot}%</b>',ParagraphStyle('',fontSize=24,fontName='Helvetica-Bold',textColor=AZUL,alignment=TA_CENTER))]],
-                        colWidths=[140*mm,45*mm],
-                        style=TableStyle([('BOX',(0,0),(-1,-1),1.5,AZUL),('ROWPADDING',(0,0),(-1,-1),6),('VALIGN',(0,0),(-1,-1),'MIDDLE')])))
+    color_final = VERDE if es_aprobado else ROJO
+    story.append(Table([[
+        Paragraph('CALIFICACIÓN FINAL TOTAL:',
+                  ParagraphStyle('',fontSize=13,fontName='Helvetica-Bold',textColor=NEGRO,alignment=TA_RIGHT)),
+        Paragraph(f'<b>{pct_tot_final}%</b>',
+                  ParagraphStyle('',fontSize=26,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+        Paragraph(f'<b>{aprobacion_final}</b>',
+                  ParagraphStyle('',fontSize=14,fontName='Helvetica-Bold',textColor=BLANCO,alignment=TA_CENTER)),
+    ]], colWidths=[100*mm,42*mm,43*mm],
+    style=TableStyle([
+        ('BOX',(0,0),(-1,-1),2,color_final),
+        ('BACKGROUND',(1,0),(1,0),color_final),
+        ('BACKGROUND',(2,0),(2,0),color_final),
+        ('LINEAFTER',(0,0),(0,0),1,colors.lightgrey),
+        ('ROWPADDING',(0,0),(-1,-1),8),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ])))
     story.append(Spacer(1,4*mm))
     story.append(Paragraph("Aviso legal: Este diagnóstico automotriz está basado exclusivamente en criterios técnicos y va destinado únicamente al solicitante. No se podrá usar como medio que garantice la comercialización, ni relación contractual alguna del vehículo.", styles['pie']))
 
@@ -576,6 +683,23 @@ def generar_pdf_route():
 
     return send_file(io.BytesIO(pdf_bytes), mimetype='application/pdf',
                      as_attachment=True, download_name=nombre)
+
+@app.route('/api/cambiar_clave', methods=['POST'])
+@login_required
+def cambiar_clave():
+    data = request.get_json()
+    clave_actual = data.get('clave_actual', '')
+    clave_nueva = data.get('clave_nueva', '')
+    if len(clave_nueva) < 6:
+        return jsonify({'error': 'La nueva clave debe tener al menos 6 caracteres'}), 400
+    conn = get_db()
+    user = conn.execute('SELECT * FROM usuarios WHERE id=?', (session['user_id'],)).fetchone()
+    if not user or user['password_hash'] != hash_pw(clave_actual):
+        conn.close()
+        return jsonify({'error': 'Clave actual incorrecta'}), 401
+    conn.execute('UPDATE usuarios SET password_hash=? WHERE id=?', (hash_pw(clave_nueva), session['user_id']))
+    conn.commit(); conn.close()
+    return jsonify({'ok': True})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5050)
